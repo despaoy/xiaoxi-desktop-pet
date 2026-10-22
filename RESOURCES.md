@@ -42,7 +42,13 @@ review/live2d/
 dist/XiaoXi/XiaoXi.exe
 ```
 
-体积约 484 MB。由于 GitHub 普通仓库不适合存放大文件，若需要单独发布，请把它压缩为 `XiaoXi-win64.zip` 后上传到 GitHub Releases，或放到你自己的网盘/CDN，并把链接补充到此处。
+体积约 484 MB（压缩后的 `XiaoXi-win64.zip` 约 185 MB）。本次尝试上传到 GitHub Release 时连接中断，因此没有在仓库里放伪造的下载链接。需要发布时：
+
+```powershell
+tar -a -c -f XiaoXi-win64.zip -C dist --exclude "XiaoXi/data" XiaoXi
+```
+
+然后把它上传到你自己的 GitHub Release、网盘或 CDN，并把真实链接补到这里；不要打包 `data/`，里面是个人使用记录。
 
 ## 完整美术源
 

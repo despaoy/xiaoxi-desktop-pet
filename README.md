@@ -4,6 +4,10 @@
 
 > 这是**核心代码仓库**。Live2D 模型、第三方渲染 SDK、完整美术源和打包后的 exe 体积较大，未直接放进 git；下载方式见 [RESOURCES.md](RESOURCES.md)。
 
+- 仓库：https://github.com/despaoy/xiaoxi-desktop-pet
+- Live2D 最小运行时（V26）：https://github.com/despaoy/xiaoxi-desktop-pet/releases/download/resources-v26/live2d-runtime-v26.zip
+- 打包后的桌面版和 859 MB 完整美术源未上传；原因和自行发布命令见 [RESOURCES.md](RESOURCES.md)。
+
 ## 功能
 
 - Live2D V26 角色：呼吸、眨眼、视线、翅膀、后发、嘴型、打招呼、拖拽与贴边。

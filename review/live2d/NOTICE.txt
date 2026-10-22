@@ -1,19 +1,16 @@
-Live2D 试验预览
+Live2D runtime notice
 
-当前显示 Live2D 官方示例 Hiyori（CubismWebSamples 4-r.7）。
-这是实际 moc3 模型，由 Cubism Core 实时计算并通过 WebGL 绘制。
-不是银白龙娘的 Live2D 成品，也没有自动把 PNG 转成绑定模型。
-银白龙娘仍需分层绘制、遮挡补全、网格与参数绑定，并从 Cubism Editor 导出。
-当前示例只用于本地技术效果审查，未加入桌宠正式角色包。
+The current desktop character is the project's Silver Dragon V26 model
+(silver-v26-diagnostic), not the official Hiyori sample.
 
-运行依赖：PixiJS 6.5.10、pixi-live2d-display 0.4.0、live2dcubismcore npm 1.0.2。
-官方 Core 下载直链不可用，本地使用上述第三方 npm 分发的 Cubism Core。
-下载地址、文件大小与 SHA256 记录在 sources.json；相关许可证在 vendor 中保留。
-示例角色及 Cubism Core 不应视为由本项目 MIT 许可覆盖，发布前需分别核对适用条款。
-官方示例：https://github.com/Live2D/CubismWebSamples/tree/4-r.7
-运行库：https://www.live2d.com/en/sdk/about/
-适配库：https://github.com/guansss/pixi-live2d-display
+Runtime components:
+- Live2D Cubism Core / Cubism Web Framework — Live2D Proprietary Software License.
+- pixi-live2d-display (Cubism 4 adapter) — MIT License, see vendor files.
+- PIXI.js — MIT License, see vendor files.
 
-启动“审查Live2D.cmd”后使用本机浏览器打开，无需账号或模型 API。
-本地服务器仅监听 127.0.0.1:18764，只提供本预览目录，不开放桌宠数据目录。
-此预览保留原桌宠程序，未切换正式渲染器。
+The model, textures, motion data and artwork are project assets. They are not
+covered by any code license in this repository and must not be redistributed
+without the author's permission.
+
+The vendor directory retains the upstream license files. This project does not
+claim MIT (or any other) licensing for the Live2D Cubism SDK or the model.
