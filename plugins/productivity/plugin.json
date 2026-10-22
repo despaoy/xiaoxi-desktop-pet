@@ -1,0 +1,1 @@
+{"id":"productivity","name":"专注与提醒","version":"1.0.0","api_version":1,"entry":"plugin.py","description":"番茄钟、定时提醒、待办、专注模式与每日小结","permissions":["本地保存待办与提醒","桌面气泡通知"]}

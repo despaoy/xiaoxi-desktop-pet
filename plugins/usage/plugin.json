@@ -1,0 +1,1 @@
+{"id":"usage","name":"应用时间","version":"1.0.0","api_version":1,"entry":"plugin.py","description":"前台应用计时、分类、限时与趋势","permissions":["读取前台进程名称","读取空闲时长","本地统计"]}

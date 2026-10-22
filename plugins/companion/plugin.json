@@ -1,0 +1,1 @@
+{"id":"companion","name":"动作与语言","version":"0.1.0-review","api_version":1,"entry":"plugin.py","description":"四组动作样片、50条本地中文短句、预览与语言编辑","permissions":["本地角色素材","本地语言包","交互气泡"]}

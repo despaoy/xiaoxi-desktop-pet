@@ -1,0 +1,1 @@
+{"id":"shortcuts","name":"快捷操作","version":"1.0.0","api_version":1,"entry":"plugin.py","description":"软件、文件、网址、场景与音量锁屏","permissions":["启动用户配置的本地目标","打开网址","系统音量与锁屏"]}
