@@ -21,7 +21,9 @@ class SilverInteractionMotion {
    p.angleZ=-2.1*E(t,.4,1.3,3.7,4.8);
    p.angleY=1.9*E(t,.4,1.3,3.7,4.8);
    p.angleX=.65*E(t,.5,1.4,3.5,4.7)*Math.sin(t*2.2);
-   p.wing=.18*lift;
+   // Leave the wing settle at its idle value during the greeting; a raised
+   // hand should come from the arm mesh, not from folding both wings.
+   p.wing=0;
    p.hair=.22*E(t,.4,1.3,3.7,4.9);
    p.mouth=(E(t,.75,.9,1.65,1.85)+E(t,2.25,2.4,3.1,3.3))*
     (.18+.28*Math.pow(Math.max(0,Math.sin(t*13)),.7));

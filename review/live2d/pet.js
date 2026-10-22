@@ -87,7 +87,6 @@
   });
   const updateCore=core.update.bind(core);
   let meshRestores=[];
-  let currentInteractionPose=null;
   core.update=()=>{
    for(const [points,original] of meshRestores)points.set(original);
    meshRestores=[];
@@ -100,18 +99,14 @@
     let cy=0;for(let i=1;i<points.length;i+=2)cy+=points[i];cy/=points.length/2;
     for(let i=1;i<points.length;i+=2)points[i]=cy+(points[i]-cy)*(1+3*mouth);
    }
-   if(interaction==='stretch'||interaction==='greeting'){
+   if(interaction==='stretch'){
     const wave=Math.sin(Math.PI*Math.min(1,interactionAge/6000))*Math.sin(2*Math.PI*interactionAge/3000);
-    const lift=currentInteractionPose?Math.max(0,-currentInteractionPose.arm):0;
     for(const id of ['ArtMesh10','ArtMesh11']){
      const points=core.getDrawableVertices(core.getDrawableIndex(id));
      meshRestores.push([points,points.slice()]);
      const xs=Array.from(points).filter((_,i)=>i%2===0);
      const hinge=Math.abs(Math.min(...xs))<Math.abs(Math.max(...xs))?Math.min(...xs):Math.max(...xs);
-     for(let i=0;i<points.length;i+=2){
-      points[i]=hinge+(points[i]-hinge)*(1+.18*wave);
-      points[i+1]-=14*lift;
-     }
+     for(let i=0;i<points.length;i+=2)points[i]=hinge+(points[i]-hinge)*(1+.18*wave);
     }
    }
   };
@@ -180,7 +175,6 @@
    status.textContent=interaction ? ({greeting:'向你打招呼',blink:'眨眨眼',stretch:'舒展翅膀',mouth:'嘴型演示',idle:'恢复待机'}[interaction]) : (bridge?'':'浏览器预览');
    model.rotation=0;
    model.scale.set(baseScale,baseScale);
-   currentInteractionPose=interactionPose;
    model.update(ms);
    frames++;
    if(interaction && frames%3===0){
