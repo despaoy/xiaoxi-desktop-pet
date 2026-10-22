@@ -4,7 +4,9 @@ from datetime import datetime
 import logging
 import os
 from pathlib import Path
+import queue
 import sys
+import threading
 import time
 import traceback
 import tkinter as tk
@@ -52,6 +54,10 @@ class App(Navigation):
         if self.background:
             self.pet_hidden = True
         self.tray = None
+        self.show_event = None
+        self.show_thread = None
+        self.show_stop = threading.Event()
+        self.show_requests = queue.Queue()
         self.panel = None
         self.bubble = None
         self.queue = deque()
@@ -136,6 +142,7 @@ class App(Navigation):
             self.root.after(1000, self.tick)
             self.root.after(100, self.poll_hotkey)
             self.root.after(1500,lambda:self.react('greeting'))
+        self.start_show_listener()
         self.start_tray()
         if not self.store.get('welcomed', False):
             if not self.background:
@@ -145,6 +152,38 @@ class App(Navigation):
     def resource(self, relative):
         return BASE / relative
 
+    def start_show_listener(self):
+        if self.smoke:
+            return
+        self.show_event = platform_win.create_show_event()
+        if not self.show_event:
+            logging.warning('Show event unavailable; second launch cannot reveal the app')
+            return
+        self.show_thread = threading.Thread(
+            target=platform_win.wait_show_event,
+            args=(self.show_event, self.show_stop,
+                  lambda: self.show_requests.put(True)),
+            daemon=True)
+        self.show_thread.start()
+        self.root.after(250, self.poll_show_requests)
+
+    def poll_show_requests(self):
+        requested = False
+        while True:
+            try:
+                self.show_requests.get_nowait()
+                requested = True
+            except queue.Empty:
+                break
+        if requested and self.root.winfo_exists():
+            logging.info('Show requested by a second launch')
+            self.set_pet_hidden(False)
+            self.show_hub()
+        try:
+            self.root.after(250, self.poll_show_requests)
+        except Exception:
+            pass
+
     def start_tray(self):
         if self.smoke:
             return
@@ -152,6 +191,9 @@ class App(Navigation):
             from desktop_pet.tray import Tray
             self.tray = Tray(self)
             self.root.after(250, self.tray.poll)
+            if self.background:
+                self.root.after(1800, lambda: self.tray and self.tray.notify(
+                    '小汐在后台运行；双击桌面快捷方式即可显示角色和小屋。'))
         except Exception:
             logging.exception('Tray unavailable')
             self.tray = None
@@ -721,6 +763,13 @@ class App(Navigation):
         self.root.after(100,self.poll_hotkey)
 
     def close(self):
+        self.show_stop.set()
+        if self.show_thread:
+            self.show_thread.join(timeout=0.5)
+            self.show_thread = None
+        if self.show_event:
+            platform_win.close_show_event(self.show_event)
+            self.show_event = None
         if self.tray:
             self.tray.stop()
             self.tray = None
@@ -757,6 +806,11 @@ def main():
     try:
         if not args.smoke:
             mutex = platform_win.acquire_instance()
+            if platform_win.IS_WINDOWS and mutex is None:
+                if platform_win.request_show():
+                    logging.info('Existing instance asked to show; exiting second launch')
+                    return
+                raise RuntimeError('桌宠已经在运行，请双击桌面快捷方式或按 Ctrl+Alt+P 打开面板。')
         app = App(directory,args.smoke,live2d=args.live2d,
                   live2d_no_sandbox=args.live2d_no_sandbox,
                   background=args.background)

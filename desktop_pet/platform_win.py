@@ -241,5 +241,58 @@ def acquire_instance():
     handle = kernel32.CreateMutexW(None, False, 'Local\\MioDesktopCompanion-v1')
     if ctypes.get_last_error() == 183:
         kernel32.CloseHandle(handle)
-        raise RuntimeError('桌宠已经在运行，请单击角色或按 Ctrl+Alt+P 打开面板。')
+        return None
     return handle
+
+
+SHOW_EVENT_NAME = r'Local\MioDesktopCompanion.Show-v1'
+EVENT_MODIFY_STATE = 0x0002
+SYNCHRONIZE = 0x00100000
+WAIT_OBJECT_0 = 0
+
+
+def create_show_event():
+    """Create the auto-reset event used to wake an already running instance."""
+    if not IS_WINDOWS:
+        return None
+    kernel32.CreateEventW.argtypes = [ctypes.c_void_p, wintypes.BOOL,
+                                      wintypes.BOOL, wintypes.LPCWSTR]
+    kernel32.CreateEventW.restype = wintypes.HANDLE
+    handle = kernel32.CreateEventW(None, False, False, SHOW_EVENT_NAME)
+    return handle or None
+
+
+def request_show(timeout=3.0):
+    """Signal the running instance to reveal its character and hub."""
+    if not IS_WINDOWS:
+        return False
+    kernel32.OpenEventW.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.LPCWSTR]
+    kernel32.OpenEventW.restype = wintypes.HANDLE
+    deadline = time.monotonic() + max(0.2, float(timeout))
+    while time.monotonic() < deadline:
+        handle = kernel32.OpenEventW(EVENT_MODIFY_STATE, False, SHOW_EVENT_NAME)
+        if handle:
+            try:
+                kernel32.SetEvent(handle)
+                return True
+            finally:
+                kernel32.CloseHandle(handle)
+        time.sleep(0.05)
+    return False
+
+
+def wait_show_event(handle, stop_event, callback):
+    if not handle or not IS_WINDOWS:
+        return
+    kernel32.WaitForSingleObject.argtypes = [wintypes.HANDLE, wintypes.DWORD]
+    kernel32.WaitForSingleObject.restype = wintypes.DWORD
+    while not stop_event.is_set():
+        result = kernel32.WaitForSingleObject(handle, 250)
+        if result == WAIT_OBJECT_0 and not stop_event.is_set():
+            callback()
+
+
+def close_show_event(handle):
+    if handle and IS_WINDOWS:
+        kernel32.CloseHandle(handle)
+

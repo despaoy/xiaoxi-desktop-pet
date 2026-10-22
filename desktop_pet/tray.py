@@ -59,3 +59,9 @@ class Tray:
             self.icon.stop()
         except Exception:
             pass
+
+    def notify(self, message, title='小汐桌宠'):
+        try:
+            self.icon.notify(message, title)
+        except Exception:
+            pass

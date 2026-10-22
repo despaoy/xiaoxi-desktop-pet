@@ -1,143 +1,129 @@
-# 小汐 · Windows 桌面宠物
+# 小汐 · 功能型桌面伙伴
 
-小汐是一个 Windows 桌面宠物应用：Tkinter 负责控制面板、插件和小屋，PySide6 / QtWebEngine 在独立进程中渲染 Live2D 角色，PyInstaller 打包为无控制台的桌面程序。
+核心代码仓库：https://github.com/despaoy/xiaoxi-desktop-pet
+Live2D 最小运行时：https://github.com/despaoy/xiaoxi-desktop-pet/releases/download/resources-v26/live2d-runtime-v26.zip
 
-> 这是**核心代码仓库**。Live2D 模型、第三方渲染 SDK、完整美术源和打包后的 exe 体积较大，未直接放进 git；下载方式见 [RESOURCES.md](RESOURCES.md)。
+## 五类功能与多入口
 
-- 仓库：https://github.com/despaoy/xiaoxi-desktop-pet
-- Live2D 最小运行时（V26）：https://github.com/despaoy/xiaoxi-desktop-pet/releases/download/resources-v26/live2d-runtime-v26.zip
-- 打包后的桌面版和 859 MB 完整美术源未上传；原因和自行发布命令见 [RESOURCES.md](RESOURCES.md)。
+单击角色打开 580×600 的侧栏式功能小屋：左侧为「今天」和五类入口，右侧为今日概览（专注、今日使用、待办、常用、下次提醒、Top 3 应用、最近待办和今日小结）；点分类切换为对应动作列表，点右上「打开完整页面」进入原功能面板。小屋无系统标题栏，可拖动左侧头像区域或顶部栏，右上角 — / × 隐藏，Esc 也可关闭。全局 Ctrl+Alt+P 打开同一个小屋。
+五类入口为：动作与互动、提醒与专注、快捷操作、使用统计、宠物与设置。右键菜单按同样分类组织，每类最多显示六个快捷操作，完整内容从“管理…”进入。
+小屋可收藏最多四个操作，前三个同时显示在右键菜单顶部；在设置中可选择双击动作，并可启用 Ctrl+Alt+1～4 执行对应收藏（重启生效，可能与其他软件冲突）。
+专注可开始、暂停、继续、结束，所有入口共用同一计时；文字指令支持“暂停专注”“继续专注”“结束计时”。暂停时间不计入剩余时长。
+动作按钮直接作用于桌面角色；自动呼吸、眨眼、翅膀、头发、轻摆与偶尔张嘴在“宠物与设置”分别开关。
+手动动作优先于自动待机：眨眼连续两次，翅膀收拢后展开，打招呼包含轻摆与嘴型；不是挥手骨骼动作。播放时角色下方显示动作名，面板接到渲染端确认后显示动作说明。关闭自动行为不影响手动动作，隐藏角色时点击动作会恢复显示。
+隐藏宠物后保留小屋作为恢复入口；若全局快捷键不可用，关闭小屋时会自动恢复角色。
+功能重构检查已完成；动作注册层：desktop_pet/actions.py，界面入口：desktop_pet/navigation.py，小屋界面：desktop_pet/hub.py。
 
-## 功能
+## 当前版本：Live2D 桌面伙伴
 
-- Live2D V26 角色：呼吸、眨眼、视线、翅膀、后发、嘴型、打招呼、拖拽与贴边。
-- 功能小屋：左侧「今天」+ 五类入口；U2 分类统计卡；完整统计页 U1（环形分类 + 圆角应用排行）。
-- 应用时间：前台应用识别、产品名归一、多进程/别名合并、分类、每日限时提醒、7/30 天数据。
-- 专注与提醒：番茄钟、一次/重复提醒、待办、每日小结。
-- 快捷操作：软件、文件、文件夹、HTTP(S) 网址、组合场景、音量/静音/锁屏。
-- 右键图标宫格菜单与快捷面板。
-- 开机自启（后台运行）、原生托盘图标、无角色后台模式。
-- 插件体系：本地插件发现、启停、版本校验；内置 companion / productivity / shortcuts / usage。
+双击 **启动Live2D桌宠.cmd** 使用真实绑定模型。当前支持呼吸、眨眼、视线跟随、身体轻微起伏、双翼与后发轻摆，以及无声提醒口型。制作工程和原素材均保留，详细状态见下方“Live2D 桌面接入试用”。
 
-## 快速开始（源码运行）
+## 早期图片动作与语言审查版（保留对照）
 
-要求：Windows 10/11，Python 3.12（含 Tkinter）。
+早期版本包含银白龙娘四组关键帧动作、50条中文短句和可编辑语言包。
+旧独立预览入口已清理；直接运行主程序即可。参见 [审查说明](review/审查说明.md)。
+在“动作与语言”页修改台词。此入口保留的是早期图片样片；当前 Live2D 模型不使用这组图片关键帧播放。
 
-```powershell
-git clone https://github.com/despaoy/xiaoxi-desktop-pet.git
-cd xiaoxi-desktop-pet
+双击 **启动桌宠.cmd**。桌宠出现后单击打开面板，拖动调整位置，右键打开菜单。
+全局快捷键 **Ctrl + Alt + P** 呼出面板；若已被其他软件占用，可使用单击入口。
+关闭面板后仍继续计时；退出请用桌宠右键菜单或设置页的“退出程序”。
 
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements-live2d.txt
-```
+## 已有功能
 
-从 [RESOURCES.md](RESOURCES.md) 下载 `live2d-runtime-v26.zip`，解压后放到：
+- 原创 Q 版人物：轻微呼吸、眨眼、专注状态；可调整配色、导入透明 PNG 换形象。
+- 应用时间：产品名与分类排行、多进程/别名合并、7/30 天数据、每日限时提醒；小屋用紧凑分类卡，完整统计页用环形图和圆角排行。系统组件、安装器和本应用自身默认排除。
+- 快捷操作：软件/文件/文件夹/HTTP(S)网址，组合工作场景，音量、静音、锁屏。
+- 效率功能：专注与休息计时、一次/重复提醒、待办、专注模式、每日小结。
+- 交互：单击面板、右键菜单、悬停摘要、全局快捷键、气泡按钮、通知记录。
+- 插件：发现本地插件、启用/停用（重启生效）、版本校验、异常日志。
 
-```text
-review/live2d/vendor/
-review/live2d/silver-v26-diagnostic/
-```
+## 一句话设置
 
-启动：
+输入框目前采用本地规则解析，不调用 AI，也不上传数据。支持这些格式：
 
-```powershell
-python run.py --live2d
-```
+- `每小时提醒我休息`
+- `每30分钟提醒我喝水`
+- `10分钟后提醒我取快递`
+- `15:30提醒我开会`（时间已过则下一天）
+- `开始25分钟专注`
+- `添加待办 买牛奶`
+- `开启专注模式` / `关闭专注模式`
+- `添加快捷入口 工作文件夹 | C:\Work`
+- `添加按钮 搜索 | https://www.bing.com`
 
-如果 Chromium 沙箱在当前远程/受限会话中无法初始化，使用兼容模式：
+未知指令会提示示例，不会自动执行任意命令。快捷入口添加后由你点击打开。
 
-```powershell
-python run.py --live2d --live2d-no-sandbox
-```
+## 数据与计时口径
 
-后台启动（只显示托盘，不显示角色）：
+数据默认在项目的 `data/companion.sqlite3`；打包版在应用目录的 `data/companion.sqlite3`。日志在 `data/app.log`。完全退出程序后可以复制整个 data 文件夹备份。
+每秒采样前台进程名称和可执行文件路径；仅在 `java.exe`、`ApplicationFrameHost.exe` 等无法按 exe 区分的宿主上临时读取窗口标题做一次匹配，标题不写数据库、不写日志。仍不采集网页内容、聊天内容或键盘文字。空闲达到 3 分钟、锁屏和休眠时暂停；应用切换存在约 1 秒采样误差。前三分钟的无操作间隔仍视为使用。
+应用名按“内置别名 + Windows 文件属性（ProductName/FileDescription） + 宿主标题兜底”归一；同一产品的辅助进程会合并。安装器、系统 Shell 组件和本应用自身默认隐藏，可在“应用时间”里管理分类。
+分类和限时在应用排行里选择一行后设置；保存时使用稳定的应用 id，不受显示名变化影响。应用限时只提醒，不结束进程。
+趋势以每日数字呈现。提醒只能在程序运行时弹出，重启后到期提醒会补发一次；不会唤醒关闭的电脑。
+专注模式减少角色动作；免打扰会抑制所有气泡但保留通知记录。专注计时完成统计的是计划时长，不代表实际注意力或活跃时长。
 
-```powershell
-python run.py --live2d --live2d-no-sandbox --background
-```
+## 插件与扩展
 
-托盘菜单：显示/隐藏角色、打开功能小屋、开机自启、退出。Windows 11 可能把新图标放进任务栏的 `^` 溢出区，可拖到任务栏固定。
+见 [插件开发说明](docs/PLUGIN_API.md)。内置应用时间、快捷操作、专注与提醒三个独立插件。
+添加插件后重启，在“设置与插件”中管理。DSH 插件不能直接加载，需要适配这里的 API。
+插件能力声明用于用户了解功能，不是沙箱。插件运行于当前用户权限，只安装可信代码。
+当前版本没有连接 Codex、DeepSeek 或任何模型 API。未来 AI 接口可通过新增命令插件接入。
 
-## 开机自启
+## 环境与限制
 
-设置里的「开机自启（后台运行，显示托盘）」会把当前可执行文件写入：
+Windows 10/11，Python 3.10+（含 Tkinter）。基础功能使用标准库；平滑图片形象和 Live2D 显示各有额外依赖。启动器优先使用本机 Codex 自带 Python，也可使用 PATH 中的 pythonw.exe。
+这是源码可运行版；另外提供打包后的桌面应用目录 `dist/XiaoXi/XiaoXi.exe`，不需要系统 Python。支持开机自启与托盘后台运行。
+第一版把角色保持在主屏幕内。尚未做跨屏拖拽、复杂换装、网络插件市场。
 
-```text
-HKCU\Software\Microsoft\Windows\CurrentVersion\Run
-```
+## 桌面应用
 
-不需要管理员权限；取消勾选会删除该项。源码运行时注册的是 `pythonw.exe run.py --live2d --live2d-no-sandbox --background`，打包版注册的是 `XiaoXi.exe --background`。
+- 应用：`dist/XiaoXi/XiaoXi.exe`（one-folder，PyInstaller 打包，内含 Python、PySide6、QtWebEngine 和 V26 模型）。
+- 桌面快捷方式：运行 `install-desktop.ps1` 生成「小汐桌宠.lnk」；也可以直接双击 exe。
+- 数据：应用目录下的 `data/`（首次运行自动创建；可整体复制备份）。
+- 重新构建：`build-desktop.ps1`，需要本机 Python 和 `.build-tools/PyInstaller`。
+- 打包版默认使用 Live2D 兼容模式（关闭 Chromium 沙箱；页面只从本机读取）。如果杀毒软件拦截，请允许该目录。
+- 快捷方式指向 `dist/XiaoXi/XiaoXi.exe`；移动应用目录后需要重新运行 `install-desktop.ps1`。
 
-## 打包
+### 开机自启与托盘
 
-需要 PyInstaller（仓库不提交构建工具）：
+- 设置里勾选「开机自启（后台运行，显示托盘）」会写入 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`，不需要管理员权限。
+- 开机命令等价于 `"XiaoXi.exe" --background`：只启动托盘，不显示角色，也不弹功能小屋。
+- 托盘菜单：显示/隐藏角色、打开功能小屋、开机自启、退出小汐；单击托盘图标打开功能小屋。
+- Windows 11 默认可能把新托盘图标放进任务栏的“^”溢出区；可从溢出区拖到任务栏固定。
+- 取消勾选或托盘菜单取消「开机自启」会删除注册表项。
+- 手动双击桌面快捷方式仍会显示角色；只有带 `--background` 的自启动是后台模式。
+- 如果已经在后台运行，再次双击快捷方式会唤醒现有角色并打开功能小屋，不再弹「已经在运行」错误。
+- 后台启动会发一条系统通知提示「双击桌面快捷方式即可显示」；托盘图标被 Windows 收进 `^` 时，快捷方式和 `Ctrl+Alt+P` 仍可打开。
 
-```powershell
-pip install pyinstaller
-# 准备 review/live2d/runtime 资源和 .runtime-live2d（见 RESOURCES.md）
-.\build-desktop.ps1
-.\install-desktop.ps1   # 创建桌面快捷方式
-```
+## 验证
 
-`XiaoXi.spec` 会打包 Python、PySide6、QtWebEngine、最小 Live2D 运行时和插件。`dist/`、`.runtime*/`、`data/` 都已在 `.gitignore` 中排除。
+`python -m unittest discover -s tests -v`
 
-## 应用识别
+`python run.py --smoke --data-dir data-smoke`
 
-- 内置别名表 + Windows `ProductName` / `FileDescription` / `CompanyName`。
-- `java.exe`、`ApplicationFrameHost.exe` 等宿主只在内存中临时用窗口标题匹配；标题不写数据库、不写日志。
-- 安装器、系统 Shell 组件、本应用自身默认排除。
-- 旧数据按别名在读取时归一，不做破坏性迁移；新数据保存稳定 app id。
-- 分类：开发与工作、浏览与资讯、AI 与沟通、娱乐与游戏、系统与工具、其他/待识别。
+Smoke 会短暂创建真实窗口，验证插件、面板和通知可建立，不会执行锁屏或打开快捷目标。
 
-## 数据与隐私
+## Live2D 桌面接入试用
 
-- 数据默认在项目的 `data/`；打包版在 `dist/XiaoXi/data/`。
-- 只记录前台应用和时长；不采集网页内容、聊天内容、键盘文字。
-- 仅对 `java` 等无法按 exe 区分的宿主临时读取窗口标题做匹配，标题不落盘。
-- 空闲、锁屏、休眠时暂停统计；应用切换约 1 秒采样误差。
-- 所有数据保存在本机 SQLite，不上传。
+双击 `启动Live2D桌宠.cmd`，或运行 `python run.py --live2d`。
+当前使用已导出的 V26 模型，包含连续呼吸、眨眼、视线跟随、身体轻微起伏、双翼舒展及后发轻摆。
+待机约每 11 秒短暂张嘴，通知出现时播放连续开合口型，结束后闭嘴；目前为无声动画，尚未接入语音同步。转头尚未绑定。
+桌面渲染上限 60 fps，本机 V26 检查实测约 58.7 fps。浏览器预览可能受后台节流影响，不能据此判断桌面帧率。
+桌宠窗口由独立 Qt 进程显示，原来的 Tk 功能面板和插件继续运行。
+渲染失败时不再回退到旧图片形象：程序会打开「Live2D 形象加载失败」窗口，列出失败阶段、错误详情和日志路径，并提供「重试加载 / 打开日志 / 退出程序」。启动阶段会按 imports、application、server、webview、page、waiting-ready 写入 data/app.log，便于定位是依赖、Qt、页面还是模型加载出的问题。旧的 Tk 图片形象只在不加 `--live2d` 启动时使用。
+如果失败阶段是 chromium 且日志出现「Chromium 渲染进程终止」，通常是受限或远程会话里 Chromium 沙箱无法初始化。可点击错误窗口的「兼容模式重试」，或双击 `启动Live2D桌宠-兼容模式.cmd`（等价于 `python run.py --live2d --live2d-no-sandbox`）。该模式只关闭 Chromium 沙箱，页面仍只从 127.0.0.1 读取本机资源，但属于明确的安全取舍。
+右键菜单为紧凑图标宫格：动作、专注、快捷、统计、设置、小屋六个入口，悬停分类打开子菜单；使用统计子菜单显示产品名、分类色和 Top 3 应用，点“今日应用排行”打开完整环形统计页。
+「宠物与设置 → 自动行为 → 形象大小」可选 70% / 80% / 90% / 100%，即时生效，默认 80%。
+渲染窗口已按角色可见包围盒收紧，不再保留左右/上下透明边距；拖动可贴住屏幕四边，形象大小改变时窗口同步缩放。为适应贴边，取消了整身旋转和打招呼时的大幅弹跳；呼吸、眨眼、视线、翅膀、后发和口型保留。模型轮廓内部的透明缝隙仍属于窗口包围盒。
 
-## 代码结构
+本机显示依赖安装在 `.runtime-live2d/`。换机时使用同一 Python 执行：
+`python -m pip install --target .runtime-live2d -r requirements-live2d.txt`
 
-```text
-desktop_pet/
-  app.py               Tk 主程序、窗口、启动流程
-  live2d_host.py       PySide6/QtWebEngine 独立渲染进程
-  navigation.py        分类入口、小屋/仪表盘、可见性
-  hub.py               B 方案侧栏小屋 + U2 紧凑统计卡
-  usage_dashboard.py   U1 完整统计页
-  menu.py              右键图标宫格、圆角卡片
-  apps.py              应用别名/元数据/标题识别/分类
-  storage.py           SQLite 设置与使用记录
-  tray.py              pystray 原生托盘
-  platform_win.py      Win32 前台应用、自启、热键
-plugins/               内置插件
-review/live2d/         前端 pet.html / pet.js 与最小运行时占位
-tests/                 单元测试
-docs/                  插件 API
-```
+已通过实际原生进程检查：模型加载、持续更新、呼吸改变网格、正常退出；完整应用检查通过：插件加载、旧图片窗口隐藏、面板与通知创建。用户已确认角色可见、单击面板、右键菜单及拖拽正常。
+V25 已修复粗网格裁掉头顶细线的问题，并检查深色背景下双翼/后发正向极限与张嘴、浅色背景下反向极限与完全闭眼，未见明显接缝或眼白残线；这两组姿态不代表全部动作组合均已验收。
+可编辑工程为 `assets/characters/silver-dragon/live2d/authoring/silver-dragon-eye-binding-v26.cmo3`，原素材及旧版本保留。
 
-## 测试
+V26 已调整两侧半闭眼关键帧的睫毛与眼白遮罩，改善中间姿态过早遮挡瞳孔的问题；已目视检查开合 0、0.25、0.5、0.75、1，以及 0.7 张嘴，并检查视线 (+1,+1) 配合半闭眼、(-1,-1) 配合四分之一开眼。原生渲染及插件联动测试通过，桌面生产进程已重启，`data/app.log` 记录 V26 就绪。
 
-```powershell
-python -m unittest discover -s tests -v
-python run.py --smoke --data-dir data-smoke
-```
 
-`smoke` 会短暂创建真实 Tk 窗口，验证插件、面板和通知，不会执行锁屏或打开快捷目标。
 
-当前核心测试 33 项通过。
-
-## 资源与许可证
-
-- 代码版权归作者所有；本仓库**暂未附加开源许可证**。如需 MIT / Apache-2.0，请先与作者确认。
-- 第三方组件（PySide6/Qt、Live2D Cubism SDK、PIXI、pystray、Pillow 等）遵循各自许可证；详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
-- Live2D 模型、SDK 与美术源未直接放入本仓库；请按 [RESOURCES.md](RESOURCES.md) 获取。
-
-## 已知限制
-
-- 旧历史里的 `java.exe`、`pythonw.exe` 无法追溯窗口标题/PID，会保留为 Java 应用 / Python；新数据会正确归类。
-- 未签名的 exe 在部分机器会触发 SmartScreen；需要自行签名。
-- Tk 界面目前是 DPI-unaware，150% 缩放下为位图放大，文字会略软。
-- 浏览器只按应用整体统计，不按标签页/网址拆分。
