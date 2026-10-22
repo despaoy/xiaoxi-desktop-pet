@@ -1,29 +1,59 @@
-/** Authored pose timeline; coordinates use the 1086 x 1448 source canvas. */
+/**
+ * Authored pose timeline.
+ *
+ * Angles are in Live2D parameter units (degrees); hair/wing values are
+ * normalised parameter values. The timeline is additive to the idle pose and
+ * is intentionally gentle: the desktop pet is usually in peripheral vision.
+ */
 class SilverInteractionMotion {
  static smooth(a,b,t){const x=Math.max(0,Math.min(1,(t-a)/(b-a)));return x*x*(3-2*x);}
  static envelope(t,a,b,c,d){return this.smooth(a,b,t)*(1-this.smooth(c,d,t));}
  static pose(action,ms){
   const t=ms/1000,S=this.smooth.bind(this),E=this.envelope.bind(this);
-  const p={lean:0,head:0,arm:0,otherArm:0,wing:0,tail:0,mouth:0,blink:null,caption:''};
+  const p={angleX:0,angleY:0,angleZ:0,bodyX:0,bodyY:0,bodyZ:0,
+   wing:0,hair:0,mouth:0,mouthForm:0,eyeSmile:0,brow:0,blink:null,
+   arm:0,caption:''};
   if(action==='greeting'){
-   const lift=E(t,.25,1.05,3.6,4.65),wave=E(t,1,1.4,3.1,3.6)*Math.sin((t-1.15)*Math.PI*3.1);
-   p.lean=-.042*E(t,.05,.85,3.8,4.9);p.head=.055*E(t,.4,1.3,3.7,4.8);
-   p.arm=-1.12*lift+.13*wave;p.otherArm=.06*E(t,.4,1.1,3.4,4.7);
-   p.tail=.045*E(t,.5,1.5,4,5.1)*Math.sin(t*2.4);p.wing=.10*E(t,.5,1.5,3.4,4.8);
-   p.mouth=(E(t,.75,.9,1.65,1.85)+E(t,2.25,2.4,3.1,3.3))*(.25+.35*Math.pow(Math.max(0,Math.sin(t*13)),.7));
+   const lift=E(t,.25,1.05,3.6,4.65);
+   const wave=E(t,1,1.4,3.1,3.6)*Math.sin((t-1.15)*Math.PI*3.1);
+   p.bodyZ=1.35*E(t,.05,.85,3.8,4.9);
+   p.bodyX=.65*E(t,.15,.9,3.7,4.8);
+   p.angleZ=-2.1*E(t,.4,1.3,3.7,4.8);
+   p.angleY=1.9*E(t,.4,1.3,3.7,4.8);
+   p.angleX=.65*E(t,.5,1.4,3.5,4.7)*Math.sin(t*2.2);
+   p.wing=.18*lift;
+   p.hair=.22*E(t,.4,1.3,3.7,4.9);
+   p.mouth=(E(t,.75,.9,1.65,1.85)+E(t,2.25,2.4,3.1,3.3))*
+    (.18+.28*Math.pow(Math.max(0,Math.sin(t*13)),.7));
+   p.mouthForm=.18*E(t,.6,1.1,3.4,4.5);
+   p.eyeSmile=.28*E(t,.55,1.2,3.4,4.6);
+   p.brow=.05*E(t,.6,1.2,3.4,4.6);
+   p.arm=-.55*lift+.10*wave;
    if(t>.65&&t<3.6)p.caption='嗨～我在这里！';
   }else if(action==='stretch'){
-   const e=E(t,.1,1.5,3.1,5.2);p.arm=-.22*e;p.otherArm=.22*e;
-   p.lean=.015*e;p.head=-.035*e;p.wing=.18*e;p.tail=-.05*E(t,.5,2,3.4,5.6);
-   if(t>1&&t<3.1)p.blink=.55;if(t>.8&&t<4)p.caption='伸个懒腰～';
+   const e=E(t,.1,1.5,3.1,5.2);
+   p.angleY=-2.8*e;p.angleX=-.65*e;p.bodyX=.9*e;p.bodyZ=.45*e;
+   p.wing=.26*e;p.hair=.24*e;p.mouthForm=.10*e;p.eyeSmile=.18*e;
+   p.blink=.42*E(t,.7,1.4,2.5,3.4);
+   if(t>.8&&t<4)p.caption='伸个懒腰～';
   }else if(action==='blink'){
-   p.head=.018*E(t,.05,.35,.8,1.5);p.lean=-.008*E(t,.15,.5,1,1.7);
-   p.blink=1-E(t,.14,.25,.31,.49)-E(t,.77,.89,.95,1.14);
+   p.angleY=.75*E(t,.05,.35,.8,1.5);
+   p.angleZ=.35*E(t,.1,.4,.9,1.6);
+   p.bodyZ=.22*E(t,.15,.5,1,1.7);
+   p.eyeSmile=.06*E(t,.2,.5,1,1.6);
   }else if(action==='mouth'){
-   const e=E(t,.2,.7,3.1,4.2);p.head=.018*e*Math.sin(t*2);p.lean=-.009*e;
-   p.mouth=e*(.18+.36*Math.pow(Math.max(0,Math.sin(t*11)),.8))*(1-.85*E(t,1.4,1.6,1.9,2.1));
+   const e=E(t,.2,.7,3.1,4.2);
+   p.angleY=.8*e*Math.sin(t*2);
+   p.angleX=.35*e;
+   p.bodyX=.35*e;
+   p.mouth=e*(.16+.34*Math.pow(Math.max(0,Math.sin(t*11)),.8))*
+    (1-.85*E(t,1.4,1.6,1.9,2.1));
+   p.mouthForm=.22*e;
+   p.eyeSmile=.12*e;
+   p.brow=.03*e;
    if(t>.5&&t<3.6)p.caption='今天也一起加油吧。';
   }
   return p;
  }
 }
+if(typeof module!=='undefined'&&module.exports)module.exports=SilverInteractionMotion;
