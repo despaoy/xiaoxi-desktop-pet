@@ -11,18 +11,12 @@ from datetime import datetime
 from pathlib import Path
 
 from desktop_pet.actions import CATEGORIES
+from desktop_pet.ui import ACCENT, BORDER, CARD, HOVER, INK, MUTED, UI_FONT
 
 BASE = Path(__file__).resolve().parent.parent
-UI_FONT = 'Microsoft YaHei UI'
-CARD = '#FCFDFF'
-BORDER = '#DFE5F1'
-INK = '#273149'
-MUTED = '#8B95A7'
-CAPTION = '#98A3B5'
-ACCENT = '#6175DA'
-ICON = '#7D89A3'
-HOVER = '#F0F4FF'
-SEP = '#EDF1F8'
+CAPTION = '#68776C'
+ICON = '#718276'
+SEP = '#E8EDE3'
 DANGER = '#C0566A'
 DANGER_HOVER = '#FDF1F3'
 PAUSE = '#C9963F'

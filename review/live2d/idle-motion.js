@@ -3,15 +3,17 @@
 (function(root){
  class SilverIdleMotion {
   constructor(random=Math.random){
-   this.random=random;this.time=0;this.amplitude=1;
+   this.random=random;this.time=0;this.amplitude=1;this.breathAmplitude=1;
    this.nextBlink=2600+this.random()*900;this.blinkStart=null;this.blinkCount=0;
+   this.nextLip=12000+this.random()*12000;this.lipStart=null;this.lipDuration=1400;
   }
   update(ms,{breathing=true,amplitude=1,blinking=true,eyeOpen=1}={}){
    ms=Math.max(0,Math.min(ms,50));this.time+=ms;
-   this.amplitude+=((breathing?amplitude:0)-this.amplitude)*(1-Math.exp(-ms/520));
+   this.amplitude+=(amplitude-this.amplitude)*(1-Math.exp(-ms/520));
+   this.breathAmplitude+=((breathing?amplitude:0)-this.breathAmplitude)*(1-Math.exp(-ms/520));
    const t=this.time;
    const wave=(period,phase=0)=>Math.sin(t*Math.PI*2/period+phase);
-   const breath=(1-Math.cos(t*Math.PI*2/4600))/2*this.amplitude;
+   const breath=(1-Math.cos(t*Math.PI*2/4600))/2*this.breathAmplitude;
    let openness=eyeOpen;
    if(!blinking){this.blinkStart=null;this.nextBlink=t+2800;}
    else {
@@ -31,9 +33,11 @@
     } else openness=1;
    }
    // Long, quiet pauses between a small lip movement; not continuous talking.
-   const lipAge=(t-3600)%11300;
-   const idleMouth=t>=3600&&lipAge>=0&&lipAge<1600
-    ? .70*Math.pow(Math.sin(Math.PI*lipAge/1600),2)*this.amplitude:0;
+   if(this.lipStart===null&&t>=this.nextLip){this.lipStart=t;this.lipDuration=1100+this.random()*700;}
+   const lipAge=this.lipStart===null?-1:t-this.lipStart;
+   const idleMouth=lipAge>=0&&lipAge<this.lipDuration
+    ? .24*Math.pow(Math.sin(Math.PI*lipAge/this.lipDuration),2)*this.amplitude:0;
+   if(lipAge>=this.lipDuration){this.lipStart=null;this.nextLip=t+18000+this.random()*16000;}
    // Low-frequency weight shift and head drift. Keep all values in model
    // parameter units (degrees for angles, normalised for hair/wings).
    const headX=(wave(8300,.2)*1.15+wave(13700,1.9)*.45)*this.amplitude;

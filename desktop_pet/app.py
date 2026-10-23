@@ -15,7 +15,7 @@ from tkinter import ttk, messagebox, simpledialog, filedialog
 from desktop_pet.storage import Store
 from desktop_pet.plugin_api import PluginManager
 from desktop_pet import platform_win
-from desktop_pet.ui import style, heading, table, buttons, PetArt, safe
+from desktop_pet.ui import style, heading, table, buttons, PetArt, safe, BG
 from desktop_pet.companion import Dialogue, FrameClock
 from desktop_pet.live2d_host import Live2DHost
 from desktop_pet.actions import ActionRegistry, CATEGORIES
@@ -344,9 +344,23 @@ class App(Navigation):
             self.live2d_failed('渲染进程退出',
                 f'渲染进程已退出（exit code {code if code is not None else "未知"}），形象无法显示。')
             return
-        host.state(focused=self.focused, preferences=self.store.get('pet.behavior', {}),
-                   scale=self.live2d_scale, visible=not self.pet_hidden)
+        host.state(**self.live2d_context())
         self.root.after(100, self.poll_live2d)
+
+    def live2d_context(self):
+        # Only whether our own input has focus is shared, never typed content.
+        try:
+            widget = self.root.focus_get()
+            editing = bool(widget and widget.winfo_class() in
+                           ('Entry', 'TEntry', 'Text', 'TCombobox', 'Spinbox', 'TSpinbox'))
+        except (tk.TclError, KeyError):
+            editing = False
+        return dict(focused=self.focused, preferences=self.store.get('pet.behavior', {}),
+                    scale=self.live2d_scale, visible=not self.pet_hidden,
+                    dnd=self.store.get('dnd', False),
+                    speechEnabled=self.store.get('companion.speech', True),
+                    notificationBusy=bool(self.bubble or self.queue), editing=editing,
+                    actionLines=self.dialogue.data.get('actions', {}))
 
     def handle_tray(self, action):
         if action == 'toggle':
@@ -479,7 +493,8 @@ class App(Navigation):
             return
         if self.sprite and (force or not self.focused or event not in ('click','drag','greeting')):
             self.sprite.play(entry['action'])
-        if not force and (self.focused or self.store.get('dnd',False) or not self.store.get('companion.speech',True)):
+        if not force and (self.focused or self.bubble or self.queue or
+                          self.store.get('dnd',False) or not self.store.get('companion.speech',True)):
             return
         line = self.dialogue.choose(event,force)
         if line:
@@ -522,7 +537,7 @@ class App(Navigation):
             self.panel.title('小汐 · 你的桌面助手')
             self.panel.geometry('920x740')
             self.panel.minsize(780,630)
-            self.panel.configure(bg='#F4F6FB')
+            self.panel.configure(bg=BG)
             self.panel.protocol('WM_DELETE_WINDOW', self.panel.withdraw)
             top = ttk.Frame(self.panel,padding=(25,20,25,8))
             top.pack(fill='x')
@@ -582,7 +597,7 @@ class App(Navigation):
         buttons(frame,[('编辑常用操作',self.edit_favorites),('返回功能小屋',self.show_hub)])
         behavior = ttk.LabelFrame(frame,text='自动行为',padding=6); behavior.pack(fill='x',pady=6)
         values = self.store.get('pet.behavior', {})
-        for i,(key,title) in enumerate([('breathe','呼吸'),('blink','眨眼'),('wings','翅膀'),('hair','头发'),('mouth','偶尔张嘴')]):
+        for i,(key,title) in enumerate([('breathe','呼吸'),('blink','眨眼'),('wings','翅膀'),('hair','头发'),('mouth','偶尔张嘴'),('actions','自然小动作')]):
             variable = tk.BooleanVar(value=values.get(key,True))
             def save_behavior(k=key,v=variable):
                 prefs=self.store.get('pet.behavior',{}); prefs[k]=v.get(); self.store.set('pet.behavior',prefs)
@@ -721,7 +736,7 @@ class App(Navigation):
             return
         title,body,actions = self.queue.popleft()
         if self.live2d and self.live2d.ready:
-            self.live2d.state(speechMs=min(6500, max(1600, len(body) * 110)))
+            self.live2d.state(notificationBusy=True, speechMs=min(6500, max(1600, len(body) * 110)))
         bubble = tk.Toplevel(self.root)
         self.bubble = bubble
         bubble.overrideredirect(True)
@@ -736,6 +751,8 @@ class App(Navigation):
             if self.bubble is bubble:
                 self.bubble = None
                 bubble.destroy()
+                if self.live2d and self.live2d.ready:
+                    self.live2d.state(notificationBusy=bool(self.queue), speechMs=0)
                 if callback:
                     safe(self.pet,callback)
                 self.root.after(200,self.next_bubble)

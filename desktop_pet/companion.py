@@ -37,6 +37,13 @@ class Dialogue:
             lines = entry.get('lines', [])
             if not lines or not all(isinstance(x,str) and x.strip() for x in lines):
                 raise ValueError(f'语言包 {event} 的台词不能为空')
+        action_lines = data.get('actions', {})
+        if not isinstance(action_lines, dict):
+            raise ValueError('动作台词必须为字典')
+        for action, lines in action_lines.items():
+            if not isinstance(lines, list) or not lines or not all(
+                    isinstance(x, str) and x.strip() and len(x) <= 40 for x in lines):
+                raise ValueError(f'动作 {action} 的台词不能为空，每句不超过40字')
         self.data = data
 
     def choose(self, event, force=False):
