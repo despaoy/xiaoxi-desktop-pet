@@ -12,7 +12,7 @@ class SilverInteractionMotion {
   const t=ms/1000,S=this.smooth.bind(this),E=this.envelope.bind(this);
   const p={angleX:0,angleY:0,angleZ:0,bodyX:0,bodyY:0,bodyZ:0,
    wing:0,hair:0,mouth:0,mouthForm:0,eyeSmile:0,brow:0,blink:null,
-   arm:0,caption:''};
+   arm:0,gazeX:0,gazeY:0,caption:''};
   if(action==='greeting'){
    const lift=E(t,.25,1.05,3.6,4.65);
    const wave=E(t,1,1.4,3.1,3.6)*Math.sin((t-1.15)*Math.PI*3.1);
@@ -43,6 +43,17 @@ class SilverInteractionMotion {
    p.angleZ=.35*E(t,.1,.4,.9,1.6);
    p.bodyZ=.22*E(t,.15,.5,1,1.7);
    p.eyeSmile=.06*E(t,.2,.5,1,1.6);
+   const blinkAge=ms<900?ms-180:ms-1080;
+   p.blink=blinkAge>=0&&blinkAge<520?Math.pow(Math.sin(Math.PI*blinkAge/520),.6):0;
+  }else if(action==='look'){
+   // Eye tracking is exported in V26; no new head-turn rig is implied.
+   const left=E(t,.25,1.0,1.5,2.2),right=E(t,2.0,2.7,3.4,4.5);
+   p.gazeX=-.48*left+.40*right;p.gazeY=.10*E(t,.4,1.2,3.3,4.6);
+   p.hair=.08*E(t,.5,1.3,3.4,4.7);p.eyeSmile=.05*right;
+  }else if(action==='relax'){
+   const e=E(t,.1,1.0,3.4,4.8);
+   p.wing=.14*Math.sin(t*2.1)*e;p.hair=.16*Math.sin(t*1.8-.3)*e;
+   p.gazeY=-.10*e;p.eyeSmile=.10*e;p.mouthForm=.08*e;
   }else if(action==='mouth'){
    const e=E(t,.2,.7,3.1,4.2);
    p.angleY=.8*e*Math.sin(t*2);

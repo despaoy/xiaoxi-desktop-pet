@@ -10,11 +10,13 @@ datas = [
     (str(root / 'review' / 'live2d' / 'pet.js'), 'review/live2d'),
     (str(root / 'review' / 'live2d' / 'idle-motion.js'), 'review/live2d'),
     (str(root / 'review' / 'live2d' / 'interaction-motion.js'), 'review/live2d'),
+    (str(root / 'review' / 'live2d' / 'behavior-controller.js'), 'review/live2d'),
     (str(root / 'review' / 'live2d' / 'vendor'), 'review/live2d/vendor'),
     (str(root / 'review' / 'live2d' / 'silver-v26-diagnostic'),
      'review/live2d/silver-v26-diagnostic'),
 ]
 hiddenimports = [
+    'desktop_pet.qt_hub', 'desktop_pet.qt_hub_host', 'desktop_pet.hub_backend',
     'uuid',
     'pystray', 'pystray._win32',
     'PySide6.QtCore', 'PySide6.QtGui', 'PySide6.QtWidgets',

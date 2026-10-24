@@ -3,7 +3,10 @@
  const status=document.getElementById('status');
  const subtitle=document.getElementById('subtitle');
  let bridge=null,focused=false,speechRemaining=0,speechPhase=0,mouth=0;
- let interaction='', interactionAge=0, preferences={}, captionText='';
+ let interaction='', interactionAge=0, preferences={}, captionText='', hostVisible=true;
+ const behavior=new SilverBehaviorController({onStart:(action,source)=>{
+  if(source==='manual')bridge?.actionStarted(action);
+ }});
  const report=name=>bridge?.event(name);
  try{
   if(window.qt && window.QWebChannel){
@@ -12,12 +15,11 @@
     const data=JSON.parse(json);
     if('focused' in data)focused=!!data.focused;
     if(data.preferences)preferences=data.preferences;
-    if(['greeting','blink','stretch','mouth','idle'].includes(data.interaction)){
-     interaction=data.interaction;interactionAge=0;
-     speechRemaining=(interaction==='mouth'||interaction==='greeting')?6000:0;speechPhase=0;
-     bridge.actionStarted(interaction);
-    }
-    if(Number.isFinite(data.speechMs)&&!interaction){speechRemaining=Math.max(0,Math.min(8000,data.speechMs));speechPhase=0;}
+    if('visible' in data)hostVisible=!!data.visible;
+    behavior.setContext({...data,preferences,visible:hostVisible&&!document.hidden});
+    if(data.interaction)behavior.request(data.interaction);
+    // Important notifications keep their own mouth timing and suppress small talk.
+    if(Number.isFinite(data.speechMs)){speechRemaining=Math.max(0,Math.min(8000,data.speechMs));speechPhase=0;}
    });
   }
   const app=new PIXI.Application({view:document.getElementById('canvas'),resizeTo:window,
@@ -39,7 +41,7 @@
   };
   addEventListener('resize',fit);fit();
   const core=model.internalModel.coreModel,idle=new SilverIdleMotion();
-  let x=0,y=0,tx=0,ty=0,breath=0,eyeOpen=1,frames=0,appliedBreath=0,dragImpulse=0;
+  let x=0,y=0,tx=0,ty=0,breath=0,eyeOpen=1,frames=0,appliedBreath=0,dragImpulse=0,meshMouth=0,meshWing=0;
   const motion={angleX:0,angleY:0,angleZ:0,bodyX:0,bodyY:0,bodyZ:0,
    wingL:0,wingR:0,hairFront:0,hairSide:0,hairBack:0,brow:0,eyeSmile:0,mouthForm:0};
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -51,10 +53,8 @@
    subtitle.classList.toggle('visible',!!text);
   };
   const animationStarted=performance.now();
-  if(['greeting','stretch','blink','mouth'].includes(demoAction)){
-   interaction=demoAction;interactionAge=0;
-   speechRemaining=(demoAction==='mouth'||demoAction==='greeting')?6000:0;
-  }
+  if(demoAction)behavior.request(demoAction);
+  addEventListener('visibilitychange',()=>behavior.setContext({visible:hostVisible&&!document.hidden}));
   model.internalModel.on('beforeModelUpdate',()=>{
    core.setParameterValueById('ParamBreath',breath);
    core.setParameterValueById('ParamMouthOpenY',mouth);
@@ -93,30 +93,36 @@
    updateCore();
    // The exported mouth/wing keys are deliberately subtle. Enlarge only the
    // explicit interaction's mesh, leaving the resting artwork untouched.
-   if(interaction==='mouth'||interaction==='greeting'){
+   if(meshMouth>.001){
     const points=core.getDrawableVertices(core.getDrawableIndex('ArtMesh30'));
     meshRestores.push([points,points.slice()]);
     let cy=0;for(let i=1;i<points.length;i+=2)cy+=points[i];cy/=points.length/2;
-    for(let i=1;i<points.length;i+=2)points[i]=cy+(points[i]-cy)*(1+3*mouth);
+    for(let i=1;i<points.length;i+=2)points[i]=cy+(points[i]-cy)*(1+3*mouth*meshMouth);
    }
-   if(interaction==='stretch'){
-    const wave=Math.sin(Math.PI*Math.min(1,interactionAge/6000))*Math.sin(2*Math.PI*interactionAge/3000);
+   if(Math.abs(meshWing)>.0001){
     for(const id of ['ArtMesh10','ArtMesh11']){
      const points=core.getDrawableVertices(core.getDrawableIndex(id));
      meshRestores.push([points,points.slice()]);
      const xs=Array.from(points).filter((_,i)=>i%2===0);
      const hinge=Math.abs(Math.min(...xs))<Math.abs(Math.max(...xs))?Math.min(...xs):Math.max(...xs);
-     for(let i=0;i<points.length;i+=2)points[i]=hinge+(points[i]-hinge)*(1+.18*wave);
+     for(let i=0;i<points.length;i+=2)points[i]=hinge+(points[i]-hinge)*(1+.18*meshWing);
     }
    }
   };
   app.ticker.add(()=>{
    const ms=Math.min(app.ticker.elapsedMS,50);
-   interactionAge+=ms;if(interactionAge>(interaction==='blink'?2400:6200))interaction='';
-   const amp=(focused?.65:1)*(preferences.amplitude??1);
-   const pose=idle.update(ms,{amplitude:amp,breathing:preferences.breathe!==false,blinking:preferences.blink!==false});
-   const interactionPose=interaction?SilverInteractionMotion.pose(interaction,interactionAge):null;
-   const p=interactionPose;
+   const state=behavior.update(ms);
+   interaction=state.current?.action||'';interactionAge=state.current?.age||0;
+   const amp=(focused?.65:1)*clamp(Number(preferences.amplitude??1)||0,0,1.5);
+   const pose=idle.update(ms,{amplitude:amp,breathing:preferences.breathe!==false,
+    blinking:preferences.blink!==false&&interaction!=='blink'});
+   const layers=[];
+   if(state.current)layers.push({...state.current,weight:1});
+   if(state.outgoing){
+    const fade=state.outgoing.remaining/320;
+    layers.push({...state.outgoing,weight:fade*fade*(3-2*fade)});
+   }
+   let targetMeshMouth=0,targetMeshWing=0,gazeX=0,gazeY=0,actionBlink=0;
    dragImpulse*=Math.exp(-ms/240);
    const target={
     angleX:pose.headX+tx*3.2*amp,
@@ -134,18 +140,32 @@
     eyeSmile:pose.eyeSmile,
     mouthForm:pose.mouthForm
    };
-   let targetMouth=speechRemaining>0?.90*Math.pow(Math.max(0,Math.sin(speechPhase/150)),.7)*Math.min(1,speechRemaining/180):(preferences.mouth===false?0:pose.idleMouth);
-   let caption='';
-   if(p){
+   let targetMouth=speechRemaining>0?.90*Math.pow(Math.max(0,Math.sin(speechPhase/150)),.7)*Math.min(1,speechRemaining/180):
+    (preferences.mouth===false||focused||behavior.context.editing||behavior.context.dnd?0:pose.idleMouth);
+   for(const layer of layers){
+    const p=SilverInteractionMotion.pose(layer.action,layer.age);
+    const weight=layer.weight;
+    for(const key of Object.keys(p))if(typeof p[key]==='number')p[key]*=weight;
+    if(layer.source==='auto'){
+     if(preferences.wings===false)p.wing=0;
+     if(preferences.hair===false)p.hair=0;
+     if(preferences.blink===false)p.blink=null;
+     if(preferences.mouth===false)p.mouth=0;
+    }
     target.angleX+=p.angleX*amp;target.angleY+=p.angleY*amp;target.angleZ+=p.angleZ*amp;
     target.bodyX+=p.bodyX*amp;target.bodyY+=p.bodyY*amp;target.bodyZ+=p.bodyZ*amp;
     target.wingL+=(p.wing*amp);target.wingR+=(p.wing*amp);
-    if(preferences.hair!==false){target.hairFront+=p.hair*amp;target.hairSide+=p.hair*amp;target.hairBack+=p.hair*amp;}
+    target.hairFront+=p.hair*amp;target.hairSide+=p.hair*amp;target.hairBack+=p.hair*amp;
     target.brow+=p.brow*amp;target.eyeSmile=Math.max(target.eyeSmile,p.eyeSmile*amp);
     target.mouthForm+=p.mouthForm*amp;
     if(p.mouth>0)targetMouth=Math.max(targetMouth,p.mouth*amp);
-    caption=p.caption;
+    gazeX+=p.gazeX*amp;gazeY+=p.gazeY*amp;
+    if(p.blink!==null)actionBlink=Math.max(actionBlink,p.blink*amp);
+    if(layer.action==='mouth'||layer.action==='greeting')targetMeshMouth=Math.max(targetMeshMouth,weight);
+    if(layer.action==='stretch'&&(layer.source==='manual'||preferences.wings!==false))targetMeshWing+=weight*Math.sin(Math.PI*Math.min(1,layer.age/5600))*Math.sin(2*Math.PI*layer.age/3000);
    }
+   meshMouth=follow(meshMouth,targetMeshMouth,ms,100);
+   meshWing=follow(meshWing,targetMeshWing,ms,95);
    // Small damped follow: the head leads, the body and hair trail it.
    motion.angleX=follow(motion.angleX,target.angleX,ms,95);
    motion.angleY=follow(motion.angleY,target.angleY,ms,115);
@@ -164,15 +184,11 @@
    speechRemaining=Math.max(0,speechRemaining-ms);speechPhase+=ms;
    mouth=follow(mouth,targetMouth,ms,45);
    breath=pose.breath;eyeOpen=pose.eyeOpen;
-   if(p&&p.blink!==null&&p.blink!==undefined)eyeOpen=Math.min(eyeOpen,1-p.blink*amp);
-   if(interaction==='blink'){
-    const blinkAge=interactionAge<900?interactionAge-180:interactionAge-1080;
-    eyeOpen=blinkAge>=0&&blinkAge<520 ? 1-Math.pow(Math.sin(Math.PI*blinkAge/520),.6):1;
-   }
-   x=follow(x,clamp(tx+pose.gazeX,-1,1),ms,85);
-   y=follow(y,clamp(ty+pose.gazeY,-1,1),ms,110);
-   setCaption(interaction?caption:'');
-   status.textContent=interaction ? ({greeting:'向你打招呼',blink:'眨眨眼',stretch:'舒展翅膀',mouth:'嘴型演示',idle:'恢复待机'}[interaction]) : (bridge?'':'浏览器预览');
+   eyeOpen=clamp(Math.min(eyeOpen,1-actionBlink),0,1);
+   x=follow(x,clamp(tx+pose.gazeX+gazeX,-1,1),ms,85);
+   y=follow(y,clamp(ty+pose.gazeY+gazeY,-1,1),ms,110);
+   setCaption(state.caption);
+   status.textContent=interaction ? ({greeting:'向你打招呼',blink:'眨眨眼',stretch:'舒展翅膀',mouth:'嘴型演示',look:'看看周围',relax:'轻轻放松',idle:'恢复待机'}[interaction]) : (bridge?'':'浏览器预览');
    model.rotation=0;
    model.scale.set(baseScale,baseScale);
    model.update(ms);
@@ -196,6 +212,7 @@
   const canvas=app.view;let press=null;
   canvas.onpointerdown=e=>{
    if(e.button!==0)return;
+   behavior.setContext({interacting:true});
    press={x:e.screenX,y:e.screenY,lastX:e.screenX,dragged:false};
    canvas.setPointerCapture(e.pointerId);bridge?.beginDrag();
   };
@@ -217,9 +234,9 @@
   canvas.onpointerup=e=>{
    if(!press)return;
    if(press.dragged){dragImpulse=0;bridge?.endDrag();}else report('click');
-   press=null;canvas.releasePointerCapture(e.pointerId);
+   press=null;behavior.setContext({interacting:false});canvas.releasePointerCapture(e.pointerId);
   };
-  canvas.onpointercancel=()=>{if(press?.dragged)bridge?.endDrag();dragImpulse=0;press=null;};
+  canvas.onpointercancel=()=>{if(press?.dragged)bridge?.endDrag();dragImpulse=0;press=null;behavior.setContext({interacting:false});};
   canvas.onpointerenter=()=>report('hover');
   canvas.onpointerleave=()=>{tx=ty=0;report('leave');};
   canvas.oncontextmenu=e=>{e.preventDefault();report('menu');};
