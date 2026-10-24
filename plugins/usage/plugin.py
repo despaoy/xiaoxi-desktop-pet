@@ -35,6 +35,10 @@ class Plugin:
         pid = getattr(process, 'pid', None)
         if pid:
             pids.add(pid)
+        hub = getattr(self.ctx.app, 'qt_hub_host', None)
+        hub_pid = getattr(getattr(hub, 'process', None), 'pid', None)
+        if hub_pid:
+            pids.add(hub_pid)
         return pids
 
     def _self_paths(self):

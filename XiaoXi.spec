@@ -16,6 +16,7 @@ datas = [
      'review/live2d/silver-v26-diagnostic'),
 ]
 hiddenimports = [
+    'desktop_pet.qt_hub', 'desktop_pet.qt_hub_host', 'desktop_pet.hub_backend',
     'uuid',
     'pystray', 'pystray._win32',
     'PySide6.QtCore', 'PySide6.QtGui', 'PySide6.QtWidgets',

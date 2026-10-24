@@ -1,5 +1,4 @@
 import argparse
-from collections import deque
 from datetime import datetime
 import logging
 import os
@@ -20,6 +19,7 @@ from desktop_pet.companion import Dialogue, FrameClock
 from desktop_pet.live2d_host import Live2DHost
 from desktop_pet.actions import ActionRegistry, CATEGORIES
 from desktop_pet.navigation import Navigation
+from desktop_pet.services import AppState, NotificationService
 
 BASE = Path(__file__).resolve().parent.parent
 if getattr(sys, 'frozen', False):
@@ -31,6 +31,18 @@ DATA_HOME = APP_HOME / 'data'
 
 
 class App(Navigation):
+    @property
+    def focused(self):
+        # Legacy plugin attribute stays available while state has one owner.
+        return self.state.focused if hasattr(self, "state") else getattr(self, "_focused", False)
+
+    @focused.setter
+    def focused(self, value):
+        if hasattr(self, "state"):
+            self.state.set_focused(value)
+        else:
+            self._focused = bool(value)
+
     def __init__(self, data_dir=None, smoke=False, live2d=False,
                  live2d_no_sandbox=False, background=False):
         self.live2d = None
@@ -46,7 +58,7 @@ class App(Navigation):
             pass
         self.root.withdraw()
         style(self.root)
-        self.focused = self.store.get('focused', False)
+        self.state = AppState(self.store)
         self.actions, self.tabs = [], {}
         self.registry = ActionRegistry(lambda owner: owner in self.plugins.plugins)
         self.init_navigation()
@@ -60,8 +72,10 @@ class App(Navigation):
         self.show_requests = queue.Queue()
         self.panel = None
         self.bubble = None
-        self.queue = deque()
-        self.history = self.store.get('notification_history', [])
+        self.notifications = NotificationService(self.store, self.state)
+        # Compatibility aliases for companion suppression and history views.
+        self.queue = self.notifications.queue
+        self.history = self.notifications.history
         self.hotkey = platform_win.Hotkey(self.store.get('navigation.favorite_hotkeys', False)) if not smoke else None
         self.plugins = PluginManager(self, BASE / 'plugins')
         self.plugins.load()
@@ -359,7 +373,7 @@ class App(Navigation):
                     scale=self.live2d_scale, visible=not self.pet_hidden,
                     dnd=self.store.get('dnd', False),
                     speechEnabled=self.store.get('companion.speech', True),
-                    notificationBusy=bool(self.bubble or self.queue), editing=editing,
+                    notificationBusy=bool(self.bubble or self.queue), editing=editing or bool(getattr(self, 'qt_hub_editing', False)),
                     actionLines=self.dialogue.data.get('actions', {}))
 
     def handle_tray(self, action):
@@ -493,7 +507,7 @@ class App(Navigation):
             return
         if self.sprite and (force or not self.focused or event not in ('click','drag','greeting')):
             self.sprite.play(entry['action'])
-        if not force and (self.focused or self.bubble or self.queue or
+        if not force and (self.focused or self.bubble or self.queue or getattr(self, 'qt_hub_editing', False) or
                           self.store.get('dnd',False) or not self.store.get('companion.speech',True)):
             return
         line = self.dialogue.choose(event,force)
@@ -699,8 +713,13 @@ class App(Navigation):
             self.store.set('accent',color)
 
     def toggle_dnd(self):
-        value = not self.store.get('dnd',False)
-        self.store.set('dnd',value)
+        value = not self.state.dnd
+        self.notifications.set_dnd(value)
+        if value and self.bubble:
+            self.bubble.destroy()
+            self.bubble = None
+            if self.live2d and self.live2d.ready:
+                self.live2d.state(notificationBusy=False, speechMs=0)
         messagebox.showinfo('免打扰','已开启：提醒仅进入通知记录。' if value else '已关闭：到期提醒将显示气泡。',parent=self.panel or self.pet)
 
     def show_history(self):
@@ -724,17 +743,16 @@ class App(Navigation):
                     line = self.dialogue.choose(event,force=True)
                     if line:
                         body = line+'\n'+body
-        self.history.append({'at':datetime.now().strftime('%m-%d %H:%M'),'title':title,'body':body})
-        self.history = self.history[-100:]
-        self.store.set('notification_history',self.history)
-        if not self.store.get('dnd',False):
-            self.queue.append((title,body,actions))
+        if self.notifications.publish(title, body, actions):
             self.next_bubble()
 
     def next_bubble(self):
         if self.bubble or not self.queue:
             return
-        title,body,actions = self.queue.popleft()
+        notification = self.notifications.next()
+        if notification is None:
+            return
+        title,body,actions = notification
         if self.live2d and self.live2d.ready:
             self.live2d.state(notificationBusy=True, speechMs=min(6500, max(1600, len(body) * 110)))
         bubble = tk.Toplevel(self.root)
@@ -780,6 +798,10 @@ class App(Navigation):
         self.root.after(100,self.poll_hotkey)
 
     def close(self):
+        host = getattr(self, 'qt_hub_host', None)
+        if host is not None:
+            host.close()
+            self.qt_hub_host = None
         self.show_stop.set()
         if self.show_thread:
             self.show_thread.join(timeout=0.5)

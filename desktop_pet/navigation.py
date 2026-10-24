@@ -9,6 +9,9 @@ from desktop_pet.menu import ContextMenu
 class Navigation:
     def init_navigation(self):
         self.hub = None
+        self.qt_hub_host = None
+        self.qt_hub_failed = False
+        self.qt_hub_editing = False
         self.usage_dashboard = None
         self.click_job = None
         self.pet_hidden = False
@@ -69,17 +72,52 @@ class Navigation:
 
     def show_hub(self):
         self.leave()
+        # A separate Qt process is optional. Never remove the working Tk path.
+        if not getattr(self, 'smoke', True) and not getattr(self, 'qt_hub_failed', False):
+            from desktop_pet.qt_hub_host import QtHubHost
+            host = getattr(self, 'qt_hub_host', None)
+            if host is None:
+                host = QtHubHost(self, self.qt_hub_failure)
+                if host.start():
+                    self.qt_hub_host = host
+                else:
+                    self.qt_hub_failed = True
+                    host = None
+            if host is not None and not host.closed:
+                if self.hub is not None and self.hub.winfo_exists():
+                    self.hub.hide()
+                host.show()
+                return
+        self.show_legacy_hub()
+
+    def qt_hub_failure(self, reason, was_visible):
+        self.qt_hub_failed = True
+        self.qt_hub_host = None
+        self.qt_hub_editing = False
+        if was_visible:
+            self.show_legacy_hub()
+            self.notify('小屋兼容模式', '新版界面暂时不可用，已恢复原小屋；计时、提醒和数据仍然保留。', character_event=False)
+
+    def show_legacy_hub(self):
+        self.leave()
         from desktop_pet.hub import Hub
         if self.hub is None or not self.hub.winfo_exists():
             self.hub = Hub(self)
         self.hub.show()
 
     def refresh_navigation(self):
+        host = getattr(self, 'qt_hub_host', None)
+        if host is not None and not host.closed:
+            host.refresh()
         if self.hub is not None and self.hub.winfo_exists():
             self.hub.refresh()
 
     def show_usage_dashboard(self):
         self.leave()
+        host = getattr(self, 'qt_hub_host', None)
+        if host is not None and not host.closed:
+            host.show('usage')
+            return
         if self.hub is not None and self.hub.winfo_exists():
             self.hub.hide()
         from desktop_pet.usage_dashboard import UsageDashboard
@@ -121,6 +159,9 @@ class Navigation:
         self.set_pet_hidden(not self.pet_hidden, show_hub=True)
 
     def close_hub(self):
+        host = getattr(self, 'qt_hub_host', None)
+        if host is not None and not host.closed:
+            host.hide()
         if self.pet_hidden and not (self.hotkey and self.hotkey.registered):
             self.set_pet_hidden(False)
         if self.hub is not None and self.hub.winfo_exists():
