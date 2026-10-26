@@ -3,11 +3,13 @@ from datetime import datetime
 import tkinter as tk
 from tkinter import ttk, messagebox
 from desktop_pet.actions import Action, CATEGORIES
+from desktop_pet.action_usage import record_usage, recommended_actions
 from desktop_pet.ui import safe, duration
 from desktop_pet.menu import ContextMenu
 
 class Navigation:
     def init_navigation(self):
+        self.registry.on_invoked = lambda key: record_usage(self.store, key)
         self.hub = None
         self.qt_hub_host = None
         self.qt_hub_failed = False
@@ -127,7 +129,7 @@ class Navigation:
 
     def edit_favorites(self):
         win = tk.Toplevel(self.root); win.title('编辑常用操作'); win.geometry('480x420')
-        ttk.Label(win,text='选择最多四项；前三项也显示在右键菜单顶部。',padding=12).pack()
+        ttk.Label(win,text='选择最多四项用于小屋和快捷键；右键菜单按使用频率自动推荐。',padding=12).pack()
         box = tk.Listbox(win, selectmode='multiple', exportselection=False, font=('Microsoft YaHei UI',11))
         box.pack(fill='both', expand=True, padx=12)
         actions = [a for category in CATEGORIES for a in self.registry.category(category)]
@@ -169,19 +171,15 @@ class Navigation:
 
     def create_category_menu(self):
         menu = tk.Menu(self.root, tearoff=False, font=('Microsoft YaHei UI',10))
-        for key in self.favorite_ids()[:3]:
-            action = self.registry.items.get(key)
-            if action:
-                menu.add_command(label='★ '+action.title, state='normal' if self.registry.available(action) else 'disabled',
-                                 command=lambda k=key:self.invoke_action(k))
+        for action in recommended_actions(self.registry, self.store):
+            menu.add_command(label='★ '+action.title,
+                             command=lambda key=action.id:self.invoke_action(key))
         menu.add_separator()
         for category, (title, _) in CATEGORIES.items():
             child = tk.Menu(menu, tearoff=False)
-            for action in self.registry.category(category)[:6]:
+            for action in self.registry.category(category):
                 child.add_command(label=action.title, state='normal' if self.registry.available(action) else 'disabled',
                                   command=lambda key=action.id:self.invoke_action(key))
-            child.add_separator()
-            child.add_command(label='管理'+title+'…', command=lambda k=category:self.show_panel(k))
             menu.add_cascade(label=title, menu=child)
         menu.add_separator()
         menu.add_command(label='功能小屋', command=self.show_hub)

@@ -38,10 +38,10 @@ class Plugin:
         heading(self.frame, '今天，按自己的节奏来', '提醒在程序运行时触发；关机期间不会唤醒电脑，重新打开后会提示到期事项。')
         self.timer_label = ttk.Label(self.frame, font=('Microsoft YaHei UI', 16, 'bold'))
         self.timer_label.pack(anchor='w', pady=4)
-        row = buttons(self.frame, [('开始 25 分钟专注', self.focus_action), ('自定时长', self.start_dialog), ('结束计时', self.stop_focus), ('专注模式 开/关', self.toggle_focus)])
+        row = buttons(self.frame, [('开始 25 分钟专注', lambda: self.ctx.app.invoke_action('productivity.focus')), ('自定时长', self.start_dialog), ('结束计时', self.stop_focus), ('专注模式 开/关', self.toggle_focus)])
         self.focus_button = row.winfo_children()[0]
         self.tree = table(self.frame, ['事项', '类型', '状态 / 下次提醒'], [260, 90, 270])
-        buttons(self.frame, [('添加待办', self.todo_dialog), ('完成 / 恢复', self.toggle_todo), ('添加提醒', self.reminder_dialog), ('删除', self.delete), ('今日小结', self.summary)])
+        buttons(self.frame, [('添加待办', lambda: self.ctx.app.invoke_action('productivity.todo')), ('完成 / 恢复', self.toggle_todo), ('添加提醒', lambda: self.ctx.app.invoke_action('productivity.reminder')), ('删除', self.delete), ('今日小结', self.summary)])
         self.refresh()
 
     def add_reminder(self, title, minutes, interval=0):
@@ -97,6 +97,9 @@ class Plugin:
         if minutes:
             try:
                 self.start_focus(minutes)
+                registry = getattr(self.ctx.app, 'registry', None)
+                if registry is not None:
+                    registry.note_invoked('productivity.focus')
             except ValueError as exc:
                 messagebox.showinfo('专注计时', str(exc), parent=self.frame)
 

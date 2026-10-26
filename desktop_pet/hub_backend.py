@@ -128,18 +128,21 @@ class HubBackend:
         app, store = self.app, self.app.store
         if command == 'action.invoke':
             key = self.text(p.get('id'), '操作', 200)
-            # Existing Tk system callbacks show modal errors and swallow them.
-            # The Qt caller needs a real result while retaining registry gating.
+            # Keep the Qt transport's direct OS result and shared registry gating.
             if key in ('shortcuts.mute', 'shortcuts.volume_up', 'shortcuts.volume_down', 'shortcuts.lock'):
                 action = app.registry.items.get(key)
                 if action is None or not app.registry.available(action):
                     raise ValueError('此操作当前不可用，请检查插件状态。')
-                return platform_win.system_action(key.split('.', 1)[1])
+                result = platform_win.system_action(key.split('.', 1)[1])
+                app.registry.note_invoked(key)
+                return result
             return app.registry.invoke(key)
         if command.startswith('timer.'):
             plugin = self.plugin('productivity')
+            used_focus = False
             if command == 'timer.start':
                 plugin.start_focus(self.number(p.get('minutes', 25), 1, 240))
+                used_focus = True
             elif command in ('timer.pause', 'timer.resume'):
                 timer = plugin.timer.current
                 if not timer:
@@ -148,12 +151,15 @@ class HubBackend:
                 desired = command == 'timer.pause'
                 if bool(timer.get('paused')) != desired:
                     plugin.toggle_pause()
+                    used_focus = True
             elif command == 'timer.stop':
                 plugin.stop_focus()
             elif command == 'timer.break':
                 plugin.start_break()
             else:
                 raise ValueError('未知计时操作')
+            if used_focus:
+                app.registry.note_invoked('productivity.focus')
             return '计时已更新'
         if command.startswith('todo.'):
             plugin = self.plugin('productivity')
@@ -178,6 +184,8 @@ class HubBackend:
             plugin.refresh()
             if command == 'todo.toggle' and done and not was_done:
                 plugin.ctx.emit('success')
+            if command == 'todo.save' and not p.get('id'):
+                app.registry.note_invoked('productivity.todo')
             return '待办已更新'
         if command.startswith('reminder.'):
             plugin = self.plugin('productivity')
@@ -209,6 +217,8 @@ class HubBackend:
                 raise ValueError('未知提醒操作')
             plugin.ctx.set('reminders', rows)
             plugin.refresh()
+            if command == 'reminder.save' and not p.get('id'):
+                app.registry.note_invoked('productivity.reminder')
             return '提醒已更新'
         if command.startswith('shortcut.'):
             plugin = self.plugin('shortcuts')
@@ -292,6 +302,7 @@ class HubBackend:
             if kind not in ('events', 'actions') or key not in app.dialogue.data.get(kind, {}):
                 raise ValueError('未知台词分类')
             if command == 'language.preview':
+                # Editing previews must not influence adaptive menu recommendations.
                 return self.plugin('companion').perform(key) if kind == 'actions' else app.react(key, force=True)
             lines = p.get('lines')
             if not isinstance(lines, list) or not 1 <= len(lines) <= 100:
@@ -345,12 +356,15 @@ class HubBackend:
             app.focused = self.boolean(p.get('enabled'))
         elif command == 'settings.dnd':
             enabled = self.boolean(p.get('enabled'))
+            dnd_changed = enabled != bool(store.get('dnd', False))
             app.notifications.set_dnd(enabled)
             if enabled and app.bubble:
                 app.bubble.destroy()
                 app.bubble = None
                 if app.live2d and app.live2d.ready:
                     app.live2d.state(notificationBusy=False, speechMs=0)
+            if dnd_changed:
+                app.registry.note_invoked('settings.dnd')
         elif command == 'settings.speech':
             store.set('companion.speech', self.boolean(p.get('enabled')))
         elif command == 'settings.behavior':

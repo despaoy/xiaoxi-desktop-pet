@@ -1,5 +1,6 @@
 """Shared actions: menus, favorites and buttons resolve the same live state."""
 from dataclasses import dataclass
+import logging
 
 CATEGORIES = {
     'companion': ('动作与互动', '打招呼、眨眼、舒展与台词'),
@@ -26,6 +27,7 @@ class ActionRegistry:
     def __init__(self, owner_available=lambda owner: True):
         self.items = {}
         self.owner_available = owner_available
+        self.on_invoked = None
 
     def add(self, action):
         if action.category not in CATEGORIES:
@@ -42,7 +44,17 @@ class ActionRegistry:
         action = self.items.get(action_id)
         if not action or not self.available(action):
             raise ValueError('此操作当前不可用，请检查插件状态。')
-        return action.callback()
+        result = action.callback()
+        self.note_invoked(action_id)
+        return result
+
+    def note_invoked(self, action_id):
+        """Report success once; ancillary usage failures must not repeat actions."""
+        if self.on_invoked is not None:
+            try:
+                self.on_invoked(action_id)
+            except Exception:
+                logging.exception("Could not persist adaptive shortcut usage")
 
     def category(self, category):
         return [a for a in self.items.values() if a.category == category
