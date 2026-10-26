@@ -9,10 +9,10 @@ class Plugin:
     def __init__(self, ctx):
         self.ctx = ctx
         self.frame = None
-        self.ctx.add_action('静音 / 恢复', lambda: self.system('mute'), action_id='shortcuts.mute')
-        self.ctx.add_action('音量 ＋', lambda: self.system('volume_up'), action_id='shortcuts.volume_up')
-        self.ctx.add_action('音量 −', lambda: self.system('volume_down'), action_id='shortcuts.volume_down')
-        self.ctx.add_action('锁定电脑', lambda: self.system('lock'), action_id='shortcuts.lock')
+        self.ctx.add_action('静音 / 恢复', lambda: platform_win.system_action('mute'), action_id='shortcuts.mute')
+        self.ctx.add_action('音量 ＋', lambda: platform_win.system_action('volume_up'), action_id='shortcuts.volume_up')
+        self.ctx.add_action('音量 −', lambda: platform_win.system_action('volume_down'), action_id='shortcuts.volume_down')
+        self.ctx.add_action('锁定电脑', lambda: platform_win.system_action('lock'), action_id='shortcuts.lock')
         self.sync_actions()
 
     def sync_actions(self):
@@ -33,7 +33,7 @@ class Plugin:
         self.tree = table(self.frame, ['名称', '类型', '目标'], [160, 85, 370])
         self.tree.bind('<Double-1>', lambda e: self.run())
         buttons(self.frame, [('打开', self.run), ('添加', self.add), ('编辑', self.edit), ('删除', self.delete), ('新建场景', self.scene)])
-        buttons(self.frame, [('音量 −', lambda: self.system('volume_down')), ('音量 ＋', lambda: self.system('volume_up')), ('静音 / 恢复', lambda: self.system('mute')), ('锁定电脑', lambda: self.system('lock'))])
+        buttons(self.frame, [('音量 −', lambda: self.ctx.app.invoke_action('shortcuts.volume_down')), ('音量 ＋', lambda: self.ctx.app.invoke_action('shortcuts.volume_up')), ('静音 / 恢复', lambda: self.ctx.app.invoke_action('shortcuts.mute')), ('锁定电脑', lambda: self.ctx.app.invoke_action('shortcuts.lock'))])
         self.refresh()
 
     def items(self):

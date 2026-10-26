@@ -18,8 +18,18 @@ class Store:
         return json.loads(row[0]) if row else default
 
     def set(self, key, value):
-        self.db.execute('INSERT OR REPLACE INTO settings VALUES (?,?)', (key, json.dumps(value, ensure_ascii=False)))
-        self.db.commit()
+        self.write_batch({key: value})
+
+    def write_batch(self, settings, events=()):
+        """Commit related settings and event rows together, or change nothing.
+
+        Serialize before opening the transaction. The sqlite context rolls back
+        all statements on failure; callers update in-memory views only afterward.
+        """
+        rows = [(key, json.dumps(value, ensure_ascii=False)) for key, value in settings.items()]
+        with self.db:
+            self.db.executemany('INSERT OR REPLACE INTO settings VALUES (?,?)', rows)
+            self.db.executemany('INSERT INTO events VALUES (?,?,?)', events)
 
     def add_usage(self, day, app, seconds):
         self.db.execute('INSERT INTO usage VALUES (?,?,?) ON CONFLICT(day,app) DO UPDATE SET seconds=seconds+excluded.seconds', (day, app, seconds))

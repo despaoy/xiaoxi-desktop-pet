@@ -7,8 +7,7 @@ from desktop_pet.menu import (
     usage_text,
 )
 from desktop_pet import apps
-
-SOFT = '#F6F8FE'
+from desktop_pet.ui import SOFT
 
 
 class UsageDashboard(Card):
@@ -131,7 +130,7 @@ class UsageDashboard(Card):
         c = self.content_canvas
         bbox = [cx - radius, cy - radius, cx + radius, cy + radius]
         if not order:
-            c.create_oval(*bbox, outline='#E8EDF6', width=width)
+            c.create_oval(*bbox, outline='#E3EADF', width=width)
         start = 90
         for key in order:
             value = categories[key]
@@ -181,7 +180,7 @@ class UsageDashboard(Card):
             if label:
                 bx = x + 14 + max(70, len(record.display) * 9) + 8
                 c.create_rectangle(bx, top + 1, bx + len(label) * 7 + 8, top + 15,
-                                   fill='#EEF2FF', outline='')
+                                   fill='#ECF1E7', outline='')
                 c.create_text(bx + 4, top + 4, text=label, anchor='nw',
                               font=(UI_FONT, 6), fill=apps.CATEGORIES['dev'][1])
             c.create_text(x + width - 4, top, text=usage_text(record.seconds),
@@ -189,7 +188,7 @@ class UsageDashboard(Card):
             c.create_text(x + 14, top + 15, text=record.label, anchor='nw',
                           font=(UI_FONT, 7), fill=MUTED)
             track = [x + 100, top + 24, x + width - 10, top + 30]
-            c.create_rectangle(*track, fill='#EEF2F8', outline='')
+            c.create_rectangle(*track, fill='#EBEFE6', outline='')
             fill_width = max(3, (width - 110) * min(1, record.seconds / maximum))
             c.create_rectangle(x + 100, top + 24, x + 100 + fill_width, top + 30,
                                fill=color, outline='')

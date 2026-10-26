@@ -3,6 +3,7 @@ import re
 import uuid
 from tkinter import ttk, simpledialog, messagebox
 from desktop_pet.ui import heading, table, buttons, duration
+from desktop_pet.services import TimerService
 
 
 def number(text):
@@ -23,6 +24,7 @@ class Plugin:
     def __init__(self, ctx):
         self.ctx = ctx
         self.frame = None
+        self.timer = TimerService(ctx.app.store, self._set_focused)
         self.ctx.add_action(self.focus_label, self.focus_action, action_id='productivity.focus')
         self.ctx.add_action('结束计时', self.stop_focus, action_id='productivity.stop', enabled=lambda:bool(ctx.get('timer')))
         self.ctx.add_action('添加提醒', self.reminder_dialog, action_id='productivity.reminder')
@@ -36,10 +38,10 @@ class Plugin:
         heading(self.frame, '今天，按自己的节奏来', '提醒在程序运行时触发；关机期间不会唤醒电脑，重新打开后会提示到期事项。')
         self.timer_label = ttk.Label(self.frame, font=('Microsoft YaHei UI', 16, 'bold'))
         self.timer_label.pack(anchor='w', pady=4)
-        row = buttons(self.frame, [('开始 25 分钟专注', self.focus_action), ('自定时长', self.start_dialog), ('结束计时', self.stop_focus), ('专注模式 开/关', self.toggle_focus)])
+        row = buttons(self.frame, [('开始 25 分钟专注', lambda: self.ctx.app.invoke_action('productivity.focus')), ('自定时长', self.start_dialog), ('结束计时', self.stop_focus), ('专注模式 开/关', self.toggle_focus)])
         self.focus_button = row.winfo_children()[0]
         self.tree = table(self.frame, ['事项', '类型', '状态 / 下次提醒'], [260, 90, 270])
-        buttons(self.frame, [('添加待办', self.todo_dialog), ('完成 / 恢复', self.toggle_todo), ('添加提醒', self.reminder_dialog), ('删除', self.delete), ('今日小结', self.summary)])
+        buttons(self.frame, [('添加待办', lambda: self.ctx.app.invoke_action('productivity.todo')), ('完成 / 恢复', self.toggle_todo), ('添加提醒', lambda: self.ctx.app.invoke_action('productivity.reminder')), ('删除', self.delete), ('今日小结', self.summary)])
         self.refresh()
 
     def add_reminder(self, title, minutes, interval=0):
@@ -64,14 +66,14 @@ class Plugin:
         self.ctx.set('todos', rows)
         self.refresh()
 
-    def start_focus(self, minutes):
-        if minutes < 1 or minutes > 240:
-            raise ValueError('专注时长应为 1–240 分钟')
-        if self.ctx.get('timer'):
-            raise ValueError('已有计时在运行，请先结束当前计时')
-        self.ctx.set('timer', {'kind':'专注', 'start':datetime.now().isoformat(), 'due':(datetime.now()+timedelta(minutes=minutes)).isoformat(), 'minutes':minutes})
-        self.ctx.app.focused = True
-        self.ctx.app.store.set('focused', True)
+    def _set_focused(self, value):
+        # v1 plugin hosts keep the public attribute; App routes it to AppState.
+        self.ctx.app.focused = bool(value)
+        if not hasattr(self.ctx.app, 'state') and self.ctx.app.store.get('focused', False) != bool(value):
+            self.ctx.app.store.set('focused', bool(value))
+
+    def start_focus(self, minutes, expected_revision=None):
+        self.timer.start(minutes, expected_revision=expected_revision)
         self.ctx.notify('专注开始', f'接下来的 {minutes:g} 分钟，一起专心做好一件事。')
         self.refresh()
 
@@ -87,18 +89,7 @@ class Plugin:
         return self.toggle_pause()
 
     def toggle_pause(self):
-        timer = self.ctx.get('timer')
-        if not timer:
-            raise ValueError('当前没有计时')
-        if timer.get('paused'):
-            timer['due'] = (datetime.now()+timedelta(seconds=timer['remaining'])).isoformat()
-            timer['paused'] = False
-        else:
-            timer['remaining'] = max(0, (datetime.fromisoformat(timer['due'])-datetime.now()).total_seconds())
-            timer['paused'] = True
-        self.ctx.set('timer', timer)
-        self.ctx.app.focused = timer['kind']=='专注' and not timer['paused']
-        self.ctx.app.store.set('focused', self.ctx.app.focused)
+        self.timer.toggle_pause()
         self.refresh()
 
     def start_dialog(self):
@@ -106,35 +97,34 @@ class Plugin:
         if minutes:
             try:
                 self.start_focus(minutes)
+                registry = getattr(self.ctx.app, 'registry', None)
+                if registry is not None:
+                    registry.note_invoked('productivity.focus')
             except ValueError as exc:
                 messagebox.showinfo('专注计时', str(exc), parent=self.frame)
 
     def stop_focus(self):
-        self.ctx.set('timer', None)
-        self.ctx.app.focused = False
-        self.ctx.app.store.set('focused', False)
+        self.timer.stop()
         self.refresh()
 
-    def start_break(self):
-        self.ctx.set('timer', {'kind':'休息', 'due':(datetime.now()+timedelta(minutes=5)).isoformat(), 'minutes':5})
+    def start_break(self, expected_revision=None):
+        self.timer.start(5, kind='休息', expected_revision=expected_revision)
+        self.refresh()
 
     def toggle_focus(self):
-        self.ctx.app.focused = not self.ctx.app.focused
-        self.ctx.app.store.set('focused', self.ctx.app.focused)
+        self._set_focused(not self.ctx.app.focused)
         self.refresh()
 
     def tick(self, now):
-        timer = self.ctx.get('timer')
-        if timer and not timer.get('paused') and now >= datetime.fromisoformat(timer['due']):
-            self.ctx.set('timer', None)
-            self.ctx.app.focused = False
-            self.ctx.app.store.set('focused', False)
+        completed = self.timer.complete_due(now)
+        if completed:
+            timer, revision = completed
             if timer['kind'] == '专注':
-                # Record on scheduled completion date even if app was closed overnight.
-                self.ctx.app.store.event(timer['due'], 'focus_planned_minutes', timer['minutes'])
-                self.ctx.notify('专注计时结束', '做得不错，休息五分钟吧。计时完成不代表期间一直在电脑前。', [('休息 5 分钟', self.start_break)])
+                self.ctx.notify('专注计时结束', '做得不错，休息五分钟吧。计时完成不代表期间一直在电脑前。',
+                                [('休息 5 分钟', lambda r=revision: self.start_break(r))])
             else:
-                self.ctx.notify('休息结束', '准备好开始下一轮了吗？', [('再专注 25 分钟', lambda:self.start_focus(25))])
+                self.ctx.notify('休息结束', '准备好开始下一轮了吗？',
+                                [('再专注 25 分钟', lambda r=revision: self.start_focus(25, r))])
         rows = self.ctx.get('reminders', [])
         changed = False
         for item in rows:
@@ -240,6 +230,5 @@ class Plugin:
             self.start_focus(int(match[1]))
             return f'已开始 {match[1]} 分钟专注。'
         if text in ('开启专注模式', '关闭专注模式'):
-            self.ctx.app.focused = text.startswith('开启')
-            self.ctx.app.store.set('focused', self.ctx.app.focused)
+            self._set_focused(text.startswith('开启'))
             return '已' + text[:2] + '专注模式。'

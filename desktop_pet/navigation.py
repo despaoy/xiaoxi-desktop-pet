@@ -3,12 +3,17 @@ from datetime import datetime
 import tkinter as tk
 from tkinter import ttk, messagebox
 from desktop_pet.actions import Action, CATEGORIES
+from desktop_pet.action_usage import record_usage, recommended_actions
 from desktop_pet.ui import safe, duration
 from desktop_pet.menu import ContextMenu
 
 class Navigation:
     def init_navigation(self):
+        self.registry.on_invoked = lambda key: record_usage(self.store, key)
         self.hub = None
+        self.qt_hub_host = None
+        self.qt_hub_failed = False
+        self.qt_hub_editing = False
         self.usage_dashboard = None
         self.click_job = None
         self.pet_hidden = False
@@ -69,17 +74,52 @@ class Navigation:
 
     def show_hub(self):
         self.leave()
+        # A separate Qt process is optional. Never remove the working Tk path.
+        if not getattr(self, 'smoke', True) and not getattr(self, 'qt_hub_failed', False):
+            from desktop_pet.qt_hub_host import QtHubHost
+            host = getattr(self, 'qt_hub_host', None)
+            if host is None:
+                host = QtHubHost(self, self.qt_hub_failure)
+                if host.start():
+                    self.qt_hub_host = host
+                else:
+                    self.qt_hub_failed = True
+                    host = None
+            if host is not None and not host.closed:
+                if self.hub is not None and self.hub.winfo_exists():
+                    self.hub.hide()
+                host.show()
+                return
+        self.show_legacy_hub()
+
+    def qt_hub_failure(self, reason, was_visible):
+        self.qt_hub_failed = True
+        self.qt_hub_host = None
+        self.qt_hub_editing = False
+        if was_visible:
+            self.show_legacy_hub()
+            self.notify('小屋兼容模式', '新版界面暂时不可用，已恢复原小屋；计时、提醒和数据仍然保留。', character_event=False)
+
+    def show_legacy_hub(self):
+        self.leave()
         from desktop_pet.hub import Hub
         if self.hub is None or not self.hub.winfo_exists():
             self.hub = Hub(self)
         self.hub.show()
 
     def refresh_navigation(self):
+        host = getattr(self, 'qt_hub_host', None)
+        if host is not None and not host.closed:
+            host.refresh()
         if self.hub is not None and self.hub.winfo_exists():
             self.hub.refresh()
 
     def show_usage_dashboard(self):
         self.leave()
+        host = getattr(self, 'qt_hub_host', None)
+        if host is not None and not host.closed:
+            host.show('usage')
+            return
         if self.hub is not None and self.hub.winfo_exists():
             self.hub.hide()
         from desktop_pet.usage_dashboard import UsageDashboard
@@ -89,7 +129,7 @@ class Navigation:
 
     def edit_favorites(self):
         win = tk.Toplevel(self.root); win.title('编辑常用操作'); win.geometry('480x420')
-        ttk.Label(win,text='选择最多四项；前三项也显示在右键菜单顶部。',padding=12).pack()
+        ttk.Label(win,text='选择最多四项用于小屋和快捷键；右键菜单按使用频率自动推荐。',padding=12).pack()
         box = tk.Listbox(win, selectmode='multiple', exportselection=False, font=('Microsoft YaHei UI',11))
         box.pack(fill='both', expand=True, padx=12)
         actions = [a for category in CATEGORIES for a in self.registry.category(category)]
@@ -121,6 +161,9 @@ class Navigation:
         self.set_pet_hidden(not self.pet_hidden, show_hub=True)
 
     def close_hub(self):
+        host = getattr(self, 'qt_hub_host', None)
+        if host is not None and not host.closed:
+            host.hide()
         if self.pet_hidden and not (self.hotkey and self.hotkey.registered):
             self.set_pet_hidden(False)
         if self.hub is not None and self.hub.winfo_exists():
@@ -128,19 +171,15 @@ class Navigation:
 
     def create_category_menu(self):
         menu = tk.Menu(self.root, tearoff=False, font=('Microsoft YaHei UI',10))
-        for key in self.favorite_ids()[:3]:
-            action = self.registry.items.get(key)
-            if action:
-                menu.add_command(label='★ '+action.title, state='normal' if self.registry.available(action) else 'disabled',
-                                 command=lambda k=key:self.invoke_action(k))
+        for action in recommended_actions(self.registry, self.store):
+            menu.add_command(label='★ '+action.title,
+                             command=lambda key=action.id:self.invoke_action(key))
         menu.add_separator()
         for category, (title, _) in CATEGORIES.items():
             child = tk.Menu(menu, tearoff=False)
-            for action in self.registry.category(category)[:6]:
+            for action in self.registry.category(category):
                 child.add_command(label=action.title, state='normal' if self.registry.available(action) else 'disabled',
                                   command=lambda key=action.id:self.invoke_action(key))
-            child.add_separator()
-            child.add_command(label='管理'+title+'…', command=lambda k=category:self.show_panel(k))
             menu.add_cascade(label=title, menu=child)
         menu.add_separator()
         menu.add_command(label='功能小屋', command=self.show_hub)
