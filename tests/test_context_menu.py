@@ -154,6 +154,32 @@ class MenuTkTests(unittest.TestCase):
             return result
         self.assertFalse(any('完整页面' in text for text in texts(menu.flyout)))
 
+    def test_actual_text_boxes_and_portrait_at_multiple_tk_scales(self):
+        original = self.root.tk.call('tk', 'scaling')
+        self.app.registry.items['productivity.focus'].label = '继续休息'
+        self.app.registry.items['companion.greeting'].label = '打招呼'
+        try:
+            for scale in (1, 1.25, 1.5, 2):
+                self.root.tk.call('tk', 'scaling', scale * 96 / 72)
+                menu = self.open()
+                for button in menu.quick_buttons:
+                    text_items = [item for item in button.find_all() if button.type(item) == 'text']
+                    self.assertEqual(len(text_items), 1)
+                    self.assertEqual(button.itemcget(text_items[0], 'text').replace('\n', ''), button.label)
+                    self.assertNotIn('…', button.label)
+                    x1, _, x2, _ = button.bbox(text_items[0])
+                    self.assertGreaterEqual(x1, 0)
+                    self.assertLessEqual(x2, button.winfo_width())
+                self.assertIsNotNone(menu.avatar_image)
+                self.assertLessEqual(menu.avatar_image.width(), round(46*menu.scale))
+                for row in menu.category_rows.values():
+                    import tkinter.font as tkfont
+                    font = tkfont.Font(font=row.text.cget('font'))
+                    self.assertLessEqual(font.measure(row.text.cget('text')), row.text.winfo_width())
+                menu.close()
+        finally:
+            self.root.tk.call('tk', 'scaling', original)
+
     def test_ranking_snapshot_stable_until_next_open(self):
         menu = self.open()
         ids = [a.id for a in menu.quick_actions]
