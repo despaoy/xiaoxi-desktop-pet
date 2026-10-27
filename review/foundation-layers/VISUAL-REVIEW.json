@@ -1,0 +1,24 @@
+{
+  "status": "visual-review-pending",
+  "patterns": {
+    "ankle-R-hidden": {
+      "patternPixels": 132,
+      "maxAlpha": 81
+    },
+    "leg-R-skin": {
+      "patternPixels": 794,
+      "maxAlpha": 255
+    },
+    "ankle-L-hidden": {
+      "patternPixels": 160,
+      "maxAlpha": 119
+    },
+    "leg-L-skin": {
+      "patternPixels": 826,
+      "maxAlpha": 255
+    }
+  },
+  "neutralMaxDelta": 3,
+  "neutralPixelsAbove2": 2,
+  "method": "Imagegen underpaint restricted to original symbol footprint, local skin colour matched. Transparent inverse-composite pattern mattes preserve source neutral. Pattern groups follow legs; skirt shade groups follow dress and record leg clipping. No runtime automatic shadow implemented."
+}

@@ -1,0 +1,1116 @@
+{
+  "canvas": [
+    1086,
+    1448
+  ],
+  "status": "foundation-grouping-review-incomplete",
+  "layers": [
+    {
+      "name": "rear_hair_under_ear_L",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "coverage-review-incomplete",
+      "file": "parts/r160-rear_hair_under_ear_L.png"
+    },
+    {
+      "name": "rear_hair_under_ear_R",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "coverage-review-incomplete",
+      "file": "parts/r159-rear_hair_under_ear_R.png"
+    },
+    {
+      "name": "rear_skirt_continuous_sleeve_backing",
+      "parentGroup": "rear_skirt",
+      "visible": true,
+      "status": "coverage-review-incomplete",
+      "file": "parts/000-rear_skirt_continuous_sleeve_backing.png"
+    },
+    {
+      "name": "rear_skirt_R_continuous_fold",
+      "parentGroup": "rear_skirt",
+      "visible": true,
+      "status": "review-incomplete",
+      "file": "parts/001-rear_skirt_R_continuous_fold.png"
+    },
+    {
+      "name": "rear_hair_full_arm_occlusion_L",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete",
+      "file": "parts/002-rear_hair_full_arm_occlusion_L.png"
+    },
+    {
+      "name": "rear_hair_left_cuff_continuous",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete",
+      "file": "parts/003-rear_hair_left_cuff_continuous.png"
+    },
+    {
+      "name": "rear_hair_lower_continuous_R",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete",
+      "file": "parts/004-rear_hair_lower_continuous_R.png"
+    },
+    {
+      "name": "rear_hair_full_arm_occlusion_R",
+      "file": "parts/005-rear_hair_full_arm_occlusion_R.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "shoulder_R_body_support",
+      "file": "parts/006-shoulder_R_body_support.png",
+      "parentGroup": "torso",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "rear-hair-neck-shoulder-overlap",
+      "file": "parts/007-rear-hair-neck-shoulder-overlap.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "rear-hair-under-ornament",
+      "file": "parts/008-rear-hair-under-ornament.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "rear-hair-under-side-curls",
+      "file": "parts/009-rear-hair-under-side-curls.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "rear-hair-wing-occlusion",
+      "file": "parts/010-rear-hair-wing-occlusion.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "rear_hair_under_arm",
+      "file": "parts/011-rear_hair_under_arm.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "rear_hair_under_arm_L",
+      "file": "parts/012-rear_hair_under_arm_L.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "029_costume_residual-remaining",
+      "file": "parts/013-029_costume_residual-remaining.png",
+      "parentGroup": "review_costume_fragments",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "029_costume_residual-sleeve-R-recovered-rear-hair",
+      "file": "parts/014-029_costume_residual-sleeve-R-recovered-rear-hair.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "029_costume_residual-sleeve-R-recovered",
+      "file": "parts/015-029_costume_residual-sleeve-R-recovered.png",
+      "parentGroup": "forearm_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "030_back_hair",
+      "file": "parts/016-030_back_hair.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "sleeve_R_residue-rear-hair",
+      "file": "parts/017-sleeve_R_residue-rear-hair.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "sleeve_R_residue",
+      "file": "parts/018-sleeve_R_residue.png",
+      "parentGroup": "forearm_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "sleeve_L_residue-rear-hair",
+      "file": "parts/019-sleeve_L_residue-rear-hair.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "sleeve_L_residue",
+      "file": "parts/020-sleeve_L_residue.png",
+      "parentGroup": "forearm_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "sleeve_L_recovered",
+      "file": "parts/021-sleeve_L_recovered.png",
+      "parentGroup": "forearm_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "rear_hair_from_tail",
+      "file": "parts/022-rear_hair_from_tail.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "tail-detached-pixels-review",
+      "file": "parts/023-tail-detached-pixels-review.png",
+      "parentGroup": "review_tail_fragments",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "tail-root-candidate",
+      "file": "parts/024-tail-root-candidate.png",
+      "parentGroup": "tail",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "tail-visible-candidate",
+      "file": "parts/025-tail-visible-candidate.png",
+      "parentGroup": "tail",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "rear_skirt_under_sleeve",
+      "file": "parts/026-rear_skirt_under_sleeve.png",
+      "parentGroup": "rear_skirt",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "sleeve_L_from_rear_skirt",
+      "file": "parts/027-sleeve_L_from_rear_skirt.png",
+      "parentGroup": "forearm_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "rear_skirt_under_sleeve_L",
+      "file": "parts/028-rear_skirt_under_sleeve_L.png",
+      "parentGroup": "rear_skirt",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "inner-skirt-leg-occlusion",
+      "file": "parts/029-inner-skirt-leg-occlusion.png",
+      "parentGroup": "rear_skirt",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "035_dress_rear-remaining",
+      "file": "parts/030-035_dress_rear-remaining.png",
+      "parentGroup": "rear_skirt",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "035_dress_rear-sleeve-R-recovered",
+      "file": "parts/031-035_dress_rear-sleeve-R-recovered.png",
+      "parentGroup": "forearm_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "leg-R-costume",
+      "file": "parts/032-leg-R-costume.png",
+      "parentGroup": "rear_skirt",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "boot-R-back-lining",
+      "file": "parts/033-boot-R-back-lining.png",
+      "parentGroup": "foot_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "ankle-R-hidden",
+      "file": "parts/034-ankle-R-hidden.png",
+      "parentGroup": "leg_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "ankle-R-hidden-pattern",
+      "parentGroup": "leg_pattern_R",
+      "visible": true,
+      "file": "parts/r192-ankle-R-hidden-pattern.png",
+      "clipToGroups": [
+        "leg_R"
+      ],
+      "status": "pattern-matte-review"
+    },
+    {
+      "name": "leg-R-root",
+      "file": "parts/035-leg-R-root.png",
+      "parentGroup": "leg_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "leg-R-upper-hem",
+      "file": "parts/036-leg-R-upper-hem.png",
+      "parentGroup": "front_dress",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "leg-R-skin",
+      "file": "parts/037-leg-R-skin.png",
+      "parentGroup": "leg_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "leg-R-skin-pattern",
+      "parentGroup": "leg_pattern_R",
+      "visible": true,
+      "file": "parts/r192-leg-R-skin-pattern.png",
+      "clipToGroups": [
+        "leg_R"
+      ],
+      "status": "pattern-matte-review"
+    },
+    {
+      "name": "boot-R-cuff-fringe",
+      "file": "parts/038-boot-R-cuff-fringe.png",
+      "parentGroup": "foot_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "leg-R-boot",
+      "file": "parts/039-leg-R-boot.png",
+      "parentGroup": "foot_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "leg-L-costume",
+      "file": "parts/040-leg-L-costume.png",
+      "parentGroup": "rear_skirt",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "boot-L-back-lining",
+      "file": "parts/041-boot-L-back-lining.png",
+      "parentGroup": "foot_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "ankle-L-hidden",
+      "file": "parts/042-ankle-L-hidden.png",
+      "parentGroup": "leg_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "ankle-L-hidden-pattern",
+      "parentGroup": "leg_pattern_L",
+      "visible": true,
+      "file": "parts/r192-ankle-L-hidden-pattern.png",
+      "clipToGroups": [
+        "leg_L"
+      ],
+      "status": "pattern-matte-review"
+    },
+    {
+      "name": "leg-L-root",
+      "file": "parts/043-leg-L-root.png",
+      "parentGroup": "leg_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "leg-L-upper-hem",
+      "file": "parts/044-leg-L-upper-hem.png",
+      "parentGroup": "front_dress",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "leg-L-skin",
+      "file": "parts/045-leg-L-skin.png",
+      "parentGroup": "leg_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "leg-L-skin-pattern",
+      "parentGroup": "leg_pattern_L",
+      "visible": true,
+      "file": "parts/r192-leg-L-skin-pattern.png",
+      "clipToGroups": [
+        "leg_L"
+      ],
+      "status": "pattern-matte-review"
+    },
+    {
+      "name": "boot-L-cuff-fringe",
+      "file": "parts/046-boot-L-cuff-fringe.png",
+      "parentGroup": "foot_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "leg-L-boot",
+      "file": "parts/047-leg-L-boot.png",
+      "parentGroup": "foot_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "neck-hidden",
+      "file": "parts/048-neck-hidden.png",
+      "parentGroup": "neck",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "neck-visible-skin",
+      "file": "parts/049-neck-visible-skin.png",
+      "parentGroup": "neck",
+      "visible": true,
+      "status": "empty-after-collar-ownership-transfer"
+    },
+    {
+      "name": "collar-contour-from-neck",
+      "parentGroup": "front_dress",
+      "visible": true,
+      "file": "parts/r172-collar-contour.png",
+      "status": "ownership-review"
+    },
+    {
+      "name": "jaw-edge-from-neck",
+      "file": "parts/050-jaw-edge-from-neck.png",
+      "parentGroup": "face",
+      "visible": false,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "upper_arm_R_complete_base",
+      "parentGroup": "arm_R",
+      "visible": true,
+      "status": "review-incomplete",
+      "file": "parts/051-upper_arm_R_complete_base.png"
+    },
+    {
+      "name": "upper_arm_L_complete_base",
+      "parentGroup": "arm_L",
+      "visible": true,
+      "status": "review-incomplete",
+      "file": "parts/052-upper_arm_L_complete_base.png"
+    },
+    {
+      "name": "050_dress_front-shoulder_skin",
+      "file": "parts/053-050_dress_front-shoulder_skin.png",
+      "parentGroup": "torso",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "leg-R-from-front-dress-hem",
+      "file": "parts/054-leg-R-from-front-dress-hem.png",
+      "parentGroup": "front_dress",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "leg-R-from-front-dress",
+      "file": "parts/055-leg-R-from-front-dress.png",
+      "parentGroup": "leg_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "front_skirt_R_skin_shading",
+      "parentGroup": "leg_shadow_R",
+      "visible": true,
+      "file": "parts/r191-front_skirt_R_skin_shading.png",
+      "status": "shadow-matte-review",
+      "clipToGroups": [
+        "leg_R"
+      ],
+      "followsGroup": "front_dress"
+    },
+    {
+      "name": "front_skirt_R_hem_from_leg",
+      "parentGroup": "front_dress",
+      "visible": true,
+      "file": "parts/r190-front_skirt_R_hem_from_leg.png",
+      "status": "ownership-review"
+    },
+    {
+      "name": "leg-L-from-front-dress-hem",
+      "file": "parts/056-leg-L-from-front-dress-hem.png",
+      "parentGroup": "front_dress",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "leg-L-from-front-dress",
+      "file": "parts/057-leg-L-from-front-dress.png",
+      "parentGroup": "leg_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "front_skirt_L_skin_shading",
+      "parentGroup": "leg_shadow_L",
+      "visible": true,
+      "file": "parts/r191-front_skirt_L_skin_shading.png",
+      "status": "shadow-matte-review",
+      "clipToGroups": [
+        "leg_L"
+      ],
+      "followsGroup": "front_dress"
+    },
+    {
+      "name": "front_skirt_L_hem_from_leg",
+      "parentGroup": "front_dress",
+      "visible": true,
+      "file": "parts/r190-front_skirt_L_hem_from_leg.png",
+      "status": "ownership-review"
+    },
+    {
+      "name": "050_dress_front-rear-hair",
+      "file": "parts/058-050_dress_front-rear-hair.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "050_dress_front-costume-cleaner",
+      "file": "parts/059-050_dress_front-costume-cleaner.png",
+      "parentGroup": "front_dress",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "forearm_R_anatomy",
+      "file": "parts/060-forearm_R_anatomy.png",
+      "parentGroup": "forearm_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "wrist_R_hidden_root",
+      "file": "parts/061-wrist_R_hidden_root.png",
+      "parentGroup": "hand_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "upper_arm_R_visible_skin",
+      "file": "parts/062-upper_arm_R_visible_skin.png",
+      "parentGroup": "arm_R",
+      "visible": true,
+      "status": "continuous-skin-review-incomplete",
+      "sourceParts": [
+        "arm_R_upper-skin",
+        "arm_R_upper-skin-edge",
+        "shoulder_skin_R_from_front_hair"
+      ]
+    },
+    {
+      "name": "upper_sleeve_R_cuff_from_skin",
+      "parentGroup": "arm_R",
+      "visible": true,
+      "file": "parts/r180-upper_sleeve_R_cuff_from_skin.png",
+      "status": "ownership-review"
+    },
+    {
+      "name": "front_dress_R_edge_from_arm",
+      "parentGroup": "front_dress",
+      "visible": true,
+      "file": "parts/r180-front_dress_R_edge_from_arm.png",
+      "status": "ownership-review"
+    },
+    {
+      "name": "arm_R_upper-rear-hair",
+      "file": "parts/063-arm_R_upper-rear-hair.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "forearm_R_hidden_elbow_cloth",
+      "parentGroup": "forearm_R",
+      "visible": true,
+      "status": "coverage-review-incomplete",
+      "file": "parts/064-forearm_R_hidden_elbow_cloth.png"
+    },
+    {
+      "name": "upper_sleeve_R_continuous_cloth",
+      "file": "parts/065-upper_sleeve_R_continuous_cloth.png",
+      "parentGroup": "arm_R",
+      "visible": true,
+      "status": "continuous-cuff-review-incomplete",
+      "sourceParts": [
+        "arm_R_upper-costume-cleaner",
+        "collar_R_from_front_hair",
+        "collar_R_hidden_cloth"
+      ]
+    },
+    {
+      "name": "wing_R_from_upper_sleeve",
+      "parentGroup": "020_wing_R",
+      "visible": true,
+      "file": "parts/r177-wing_R_from_upper_sleeve.png",
+      "status": "ownership-review"
+    },
+    {
+      "name": "arm_R_forearm-rear-hair",
+      "file": "parts/066-arm_R_forearm-rear-hair.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "forearm_R_cloth_seam_infill",
+      "parentGroup": "forearm_R",
+      "visible": true,
+      "status": "review-incomplete",
+      "file": "parts/067-forearm_R_cloth_seam_infill.png"
+    },
+    {
+      "name": "forearm_R_original_notch_recovery",
+      "parentGroup": "forearm_R",
+      "visible": true,
+      "status": "source-ownership-review-incomplete",
+      "file": "parts/068-forearm_R_original_notch_recovery.png"
+    },
+    {
+      "name": "arm_R_forearm",
+      "file": "parts/069-arm_R_forearm.png",
+      "parentGroup": "forearm_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "cuff_R_inner_lining",
+      "file": "parts/070-cuff_R_inner_lining.png",
+      "parentGroup": "forearm_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "arm_R_hand",
+      "file": "parts/071-arm_R_hand.png",
+      "parentGroup": "hand_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "cuff_R_front_lip",
+      "file": "parts/072-cuff_R_front_lip.png",
+      "parentGroup": "forearm_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "forearm_L_anatomy",
+      "file": "parts/073-forearm_L_anatomy.png",
+      "parentGroup": "forearm_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "wrist_L_hidden_root",
+      "file": "parts/074-wrist_L_hidden_root.png",
+      "parentGroup": "hand_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "upper_arm_L_visible_skin",
+      "file": "parts/075-upper_arm_L_visible_skin.png",
+      "parentGroup": "arm_L",
+      "visible": true,
+      "status": "continuous-skin-review-incomplete",
+      "sourceParts": [
+        "arm_L_upper-skin",
+        "arm_L_upper-skin-edge",
+        "shoulder_skin_L_from_front_hair"
+      ]
+    },
+    {
+      "name": "upper_sleeve_L_cuff_from_skin",
+      "parentGroup": "arm_L",
+      "visible": true,
+      "file": "parts/r180-upper_sleeve_L_cuff_from_skin.png",
+      "status": "ownership-review"
+    },
+    {
+      "name": "front_dress_L_edge_from_arm",
+      "parentGroup": "front_dress",
+      "visible": true,
+      "file": "parts/r180-front_dress_L_edge_from_arm.png",
+      "status": "ownership-review"
+    },
+    {
+      "name": "arm_L_upper-rear-hair",
+      "file": "parts/076-arm_L_upper-rear-hair.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "arm_L_upper-costume-cleaner-front-dress",
+      "file": "parts/077-arm_L_upper-costume-cleaner-front-dress.png",
+      "parentGroup": "front_dress",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "forearm_L_hidden_elbow_cloth",
+      "parentGroup": "forearm_L",
+      "visible": true,
+      "status": "coverage-review-incomplete",
+      "file": "parts/078-forearm_L_hidden_elbow_cloth.png"
+    },
+    {
+      "name": "upper_sleeve_L_continuous_cloth",
+      "file": "parts/079-upper_sleeve_L_continuous_cloth.png",
+      "parentGroup": "arm_L",
+      "visible": true,
+      "status": "continuous-cuff-review-incomplete",
+      "sourceParts": [
+        "arm_L_upper-costume-cleaner",
+        "collar_L_from_front_hair",
+        "collar_L_hidden_cloth"
+      ]
+    },
+    {
+      "name": "wing_L_from_upper_sleeve",
+      "parentGroup": "021_wing_L",
+      "visible": true,
+      "file": "parts/r177-wing_L_from_upper_sleeve.png",
+      "status": "ownership-review"
+    },
+    {
+      "name": "arm_L_forearm-rear-hair",
+      "file": "parts/080-arm_L_forearm-rear-hair.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "arm_L_forearm-front-dress",
+      "file": "parts/081-arm_L_forearm-front-dress.png",
+      "parentGroup": "front_dress",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "arm_L_forearm",
+      "file": "parts/082-arm_L_forearm.png",
+      "parentGroup": "forearm_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "cuff_L_inner_lining",
+      "parentGroup": "forearm_L",
+      "visible": true,
+      "status": "review-incomplete",
+      "file": "parts/083-cuff_L_inner_lining.png"
+    },
+    {
+      "name": "arm_L_hand",
+      "file": "parts/084-arm_L_hand.png",
+      "parentGroup": "hand_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "cuff_L_front_lip",
+      "parentGroup": "forearm_L",
+      "visible": true,
+      "status": "review-incomplete",
+      "file": "parts/085-cuff_L_front_lip.png"
+    },
+    {
+      "name": "020_wing_R-edge-residue",
+      "file": "parts/086-020_wing_R-edge-residue.png",
+      "parentGroup": "rear_hair_candidate",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "020_wing_R",
+      "file": "parts/087-020_wing_R.png",
+      "parentGroup": "020_wing_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "021_wing_L-edge-residue",
+      "file": "parts/088-021_wing_L-edge-residue.png",
+      "parentGroup": "rear_hair_candidate",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "021_wing_L",
+      "file": "parts/089-021_wing_L.png",
+      "parentGroup": "021_wing_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "ear_R",
+      "file": "parts/090-ear_R.png",
+      "parentGroup": "ear_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "ear_L",
+      "file": "parts/091-ear_L.png",
+      "parentGroup": "ear_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "upper-face-hidden-extension",
+      "file": "parts/092-upper-face-hidden-extension.png",
+      "parentGroup": "face",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "face",
+      "file": "parts/093-face.png",
+      "parentGroup": "face",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "front_side_R_original_forehead_shadow",
+      "parentGroup": "front_side_R",
+      "visible": true,
+      "status": "review-incomplete",
+      "file": "parts/r145-front_side_R-forehead-shadow.png"
+    },
+    {
+      "name": "front_center_original_forehead_shadow",
+      "parentGroup": "front_center",
+      "visible": true,
+      "status": "review-incomplete",
+      "file": "parts/r145-front_center-forehead-shadow.png"
+    },
+    {
+      "name": "front_side_L_original_forehead_shadow",
+      "parentGroup": "front_side_L",
+      "visible": true,
+      "status": "review-incomplete",
+      "file": "parts/r145-front_side_L-forehead-shadow.png"
+    },
+    {
+      "name": "front_center_cast_shadow",
+      "parentGroup": "front_center",
+      "visible": true,
+      "status": "matte-review-incomplete",
+      "file": "parts/094-front_center_cast_shadow.png"
+    },
+    {
+      "name": "front_side_L_cast_shadow",
+      "parentGroup": "front_side_L",
+      "visible": true,
+      "status": "matte-review-incomplete",
+      "file": "parts/095-front_side_L_cast_shadow.png"
+    },
+    {
+      "name": "crease_R",
+      "file": "parts/096-crease_R.png",
+      "parentGroup": "crease_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "sclera_R",
+      "file": "parts/097-sclera_R.png",
+      "parentGroup": "sclera_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "iris_R",
+      "file": "parts/098-iris_R.png",
+      "parentGroup": "iris_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "lower_lash_R",
+      "file": "parts/099-lower_lash_R.png",
+      "parentGroup": "lower_lash_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "upper_lash_R",
+      "file": "parts/100-upper_lash_R.png",
+      "parentGroup": "upper_lash_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "crease_L",
+      "file": "parts/101-crease_L.png",
+      "parentGroup": "crease_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "sclera_L",
+      "file": "parts/102-sclera_L.png",
+      "parentGroup": "sclera_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "iris_L",
+      "file": "parts/103-iris_L.png",
+      "parentGroup": "iris_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "lower_lash_L",
+      "file": "parts/104-lower_lash_L.png",
+      "parentGroup": "lower_lash_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "upper_lash_L",
+      "file": "parts/105-upper_lash_L.png",
+      "parentGroup": "upper_lash_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "086_mouth_closed",
+      "file": "parts/106-086_mouth_closed.png",
+      "parentGroup": "086_mouth_closed",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "100_horn_R",
+      "file": "parts/107-100_horn_R.png",
+      "parentGroup": "100_horn_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "101_horn_L",
+      "file": "parts/108-101_horn_L.png",
+      "parentGroup": "101_horn_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "horn-residue",
+      "file": "parts/109-horn-residue.png",
+      "parentGroup": "horns",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "hair_tip_R_from_shoulder_residue",
+      "file": "parts/110-hair_tip_R_from_shoulder_residue.png",
+      "parentGroup": "front_side_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "hair_tip_L_from_shoulder_residue",
+      "file": "parts/111-hair_tip_L_from_shoulder_residue.png",
+      "parentGroup": "front_side_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "side_R-root",
+      "file": "parts/112-side_R-root.png",
+      "parentGroup": "front_side_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "side_L-root",
+      "file": "parts/113-side_L-root.png",
+      "parentGroup": "front_side_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "center-root",
+      "file": "parts/114-center-root.png",
+      "parentGroup": "front_center",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "front_side_R_continuous_visible",
+      "parentGroup": "front_side_R",
+      "visible": true,
+      "status": "review-incomplete",
+      "file": "parts/115-front_side_R_continuous_visible.png"
+    },
+    {
+      "name": "front_center_continuous_visible",
+      "parentGroup": "front_center",
+      "visible": true,
+      "status": "review-incomplete",
+      "file": "parts/116-front_center_continuous_visible.png"
+    },
+    {
+      "name": "front_side_L_continuous_visible",
+      "parentGroup": "front_side_L",
+      "visible": true,
+      "status": "review-incomplete",
+      "file": "parts/117-front_side_L_continuous_visible.png"
+    },
+    {
+      "name": "crown-visible",
+      "file": "parts/118-crown-visible.png",
+      "parentGroup": "front_crown",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "095_ahoge",
+      "file": "parts/119-095_ahoge.png",
+      "parentGroup": "095_ahoge",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "ear-L-from-ornament",
+      "file": "parts/120-ear-L-from-ornament.png",
+      "parentGroup": "ear_L",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "rear-hair-from-ornament",
+      "file": "parts/121-rear-hair-from-ornament.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "hair-from-ornament-boundary",
+      "file": "parts/122-hair-from-ornament-boundary.png",
+      "parentGroup": "rear_hair",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "ornament-flower-and-connector",
+      "file": "parts/123-ornament-flower-and-connector.png",
+      "parentGroup": "ornament_flower",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "ornament-pendant",
+      "file": "parts/124-ornament-pendant.png",
+      "parentGroup": "ornament_pendant",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "eyebrow_R",
+      "file": "parts/125-eyebrow_R.png",
+      "parentGroup": "eye_R",
+      "visible": true,
+      "status": "review-incomplete"
+    },
+    {
+      "name": "eyebrow_L",
+      "file": "parts/126-eyebrow_L.png",
+      "parentGroup": "eye_L",
+      "visible": true,
+      "status": "review-incomplete"
+    }
+  ],
+  "wristPivots": {
+    "R": [
+      310,
+      805
+    ],
+    "L": [
+      778,
+      805
+    ]
+  },
+  "groupHierarchy": {
+    "forearm_R": "arm_R",
+    "forearm_L": "arm_L",
+    "hand_R": "forearm_R",
+    "hand_L": "forearm_L",
+    "leg_pattern_R": "leg_R",
+    "leg_pattern_L": "leg_L",
+    "leg_shadow_R": "front_dress",
+    "leg_shadow_L": "front_dress"
+  },
+  "jointPivots": {
+    "elbow_R": [
+      384,
+      731
+    ],
+    "elbow_L": [
+      701,
+      731
+    ],
+    "wrist_R": [
+      310,
+      805
+    ],
+    "wrist_L": [
+      778,
+      805
+    ]
+  }
+}
